@@ -1,0 +1,9 @@
+__metadata:
+  version: 8
+  cacheKey: 10c0
+
+"tihomir-selak-2026@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "tihomir-selak-2026@workspace:."
+  languageName: node
+  linkType: soft

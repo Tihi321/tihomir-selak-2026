@@ -1,0 +1,19 @@
+# Dependencies and package-manager state
+node_modules/
+.pnp.*
+.yarn/install-state.gz
+
+# Build output
+dist/
+.astro/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
