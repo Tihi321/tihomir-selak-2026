@@ -50,22 +50,39 @@ jobs:
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
     steps:
+      - name: Check Netlify credentials
+        id: netlify_credentials
+        shell: bash
+        run: |
+          if [[ -n "$NETLIFY_AUTH_TOKEN" && -n "$NETLIFY_SITE_ID" ]]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Production deployment is skipped until NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID are configured."
+          fi
+
       - name: Check out repository
+        if: steps.netlify_credentials.outputs.configured == 'true'
         uses: actions/checkout@v7
 
       - name: Set up Node.js
+        if: steps.netlify_credentials.outputs.configured == 'true'
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Enable Corepack
+        if: steps.netlify_credentials.outputs.configured == 'true'
         run: corepack enable
 
       - name: Install dependencies
+        if: steps.netlify_credentials.outputs.configured == 'true'
         run: yarn install --immutable
 
       - name: Build
+        if: steps.netlify_credentials.outputs.configured == 'true'
         run: yarn build
 
       - name: Deploy dist with the official Netlify CLI
+        if: steps.netlify_credentials.outputs.configured == 'true'
         run: yarn dlx netlify-cli@27.8.0 deploy --prod --dir=dist --site="$NETLIFY_SITE_ID"
