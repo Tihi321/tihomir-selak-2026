@@ -1,0 +1,34 @@
+---
+import SignalRail from './SignalRail.astro';
+
+const steps = [
+  'Clarify the operational problem and constraints.',
+  'Turn ambiguity into decisions and executable work.',
+  "Match ownership to engineers' strengths and growth goals.",
+  'Keep delivery observable through review, tests, documentation, and feedback.',
+];
+---
+
+<section
+  class="content-section split-section"
+  id="approach"
+  aria-labelledby="approach-title"
+>
+  <SignalRail label="How I work" />
+  <div class="section-body approach-body">
+    <div class="section-heading">
+      <p class="section-kicker">A practical sequence</p>
+      <h2 id="approach-title">Make the next step clear.</h2>
+    </div>
+    <ol class="approach-list">
+      {steps.map((step, index) => (
+        <li>
+          <span class="step-number" aria-hidden="true">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <span>{step}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

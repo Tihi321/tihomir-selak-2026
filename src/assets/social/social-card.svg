@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f3f7f8" />
+  <path d="M80 96H1120" stroke="#b8c8cd" stroke-width="2" />
+  <text x="80" y="72" fill="#14262f" font-family="Arial, sans-serif" font-size="24" font-weight="700">Tihomir Selak</text>
+  <text x="1120" y="72" fill="#587079" font-family="Arial, sans-serif" font-size="17" text-anchor="end">Augsburg, Germany</text>
+  <path d="M1054 143v326c0 33 18 51 49 51h40" fill="none" stroke="#2b7a78" stroke-width="2" />
+  <path d="M1054 236h-54M1054 378h-54" fill="none" stroke="#2b7a78" stroke-width="2" />
+  <circle cx="1000" cy="236" r="8" fill="#f3f7f8" stroke="#2b7a78" stroke-width="3" />
+  <circle cx="1000" cy="378" r="8" fill="#f3f7f8" stroke="#2b7a78" stroke-width="3" />
+  <circle cx="1143" cy="520" r="9" fill="#d84a3e" />
+  <text x="80" y="190" fill="#587079" font-family="Arial, sans-serif" font-size="21" font-weight="600">DEVELOPMENT TEAM LEAD · SENIOR SOFTWARE ENGINEER</text>
+  <text x="80" y="284" fill="#14262f" font-family="Arial, sans-serif" font-size="62" font-weight="700" letter-spacing="-2">I lead teams and build software</text>
+  <text x="80" y="356" fill="#14262f" font-family="Arial, sans-serif" font-size="62" font-weight="700" letter-spacing="-2">for systems that have to work live.</text>
+  <text x="80" y="430" fill="#314a54" font-family="Arial, sans-serif" font-size="25">Software for real-time augmented reality and virtual production.</text>
+  <path d="M80 500H860" stroke="#b8c8cd" stroke-width="2" />
+  <text x="80" y="550" fill="#587079" font-family="Arial, sans-serif" font-size="18">Delivery leadership</text>
+  <path d="M257 543h42" stroke="#2b7a78" stroke-width="2" />
+  <text x="314" y="550" fill="#587079" font-family="Arial, sans-serif" font-size="18">Shared foundations</text>
+  <path d="M482 543h42" stroke="#2b7a78" stroke-width="2" />
+  <text x="539" y="550" fill="#587079" font-family="Arial, sans-serif" font-size="18">Real-time systems</text>
+</svg>

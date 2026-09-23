@@ -1,0 +1,30 @@
+---
+import SignalRail from './SignalRail.astro';
+import { experience } from '../data/experience';
+---
+
+<section
+  class="content-section split-section"
+  id="experience"
+  aria-labelledby="experience-title"
+>
+  <SignalRail label="Experience" />
+  <div class="section-body">
+    <div class="section-heading">
+      <p class="section-kicker">A compact timeline</p>
+      <h2 id="experience-title">Built across software and live production.</h2>
+    </div>
+    <ol class="experience-list">
+      {experience.map((item) => (
+        <li class="experience-item">
+          <p class="experience-period">{item.period}</p>
+          <div>
+            <h3>{item.role}</h3>
+            <p class="experience-employer">{item.employer}</p>
+            <p>{item.description}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

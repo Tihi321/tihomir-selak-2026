@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tihomir-selak.from.hr/sitemap-index.xml

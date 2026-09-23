@@ -1,0 +1,7 @@
+.codex/**
+dist/**
+node_modules/**
+public/**/*.pdf
+public/social-card.png
+screenshots/**
+test-results/**

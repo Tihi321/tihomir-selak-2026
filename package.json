@@ -1,14 +1,33 @@
 {
   "name": "tihomir-selak-2026",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "Personal site for Tihomir Selak",
+  "description": "Evidence-led professional site for Tihomir Selak",
   "packageManager": "yarn@4.9.2",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
-    "check": "node --check scripts/build-placeholder.mjs",
-    "build": "node scripts/build-placeholder.mjs"
+    "dev": "astro dev",
+    "check": "astro check",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "astro": "7.3.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@axe-core/playwright": "4.13.0",
+    "@emnapi/runtime": "1.11.3",
+    "@playwright/test": "1.63.0",
+    "playwright-core": "1.63.0",
+    "prettier": "3.9.9",
+    "prettier-plugin-astro": "1.0.1",
+    "typescript": "6.0.3"
   }
 }
