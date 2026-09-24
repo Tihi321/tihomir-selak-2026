@@ -1,0 +1,21 @@
+---
+import { site } from '../data/site';
+---
+
+<footer class="site-footer wrap" id="contact" aria-labelledby="contact-title">
+  <div class="footer-main">
+    <div>
+      <p class="section-kicker">A direct route</p>
+      <h2 id="contact-title">Let’s talk about the work.</h2>
+      <p class="footer-location">{site.location}</p>
+    </div>
+    <slot />
+  </div>
+  <div class="footer-bottom">
+    <a class="wordmark" href="/">
+      Tihomir Selak
+    </a>
+    <p>Development Team Lead · Senior Software Engineer</p>
+    <a href="#top">Back to top ↑</a>
+  </div>
+</footer>

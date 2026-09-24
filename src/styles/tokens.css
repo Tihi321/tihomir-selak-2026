@@ -1,0 +1,14 @@
+:root {
+  color-scheme: light;
+  --color-canvas: #f3f7f8;
+  --color-surface: #fff;
+  --color-ink: #14262f;
+  --color-muted: #587079;
+  --color-route: #2b7a78;
+  --color-tally: #d84a3e;
+  --color-rule: #b8c8cd;
+  --font-sans: var(--font-archivo), Archivo, Arial, sans-serif;
+  --content-width: 1240px;
+  --page-gutter: clamp(20px, 5.1vw, 76px);
+  --space-section: clamp(76px, 10vw, 136px);
+}

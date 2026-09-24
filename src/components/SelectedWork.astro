@@ -1,0 +1,46 @@
+---
+import SignalRail from './SignalRail.astro';
+import { selectedWork } from '../data/selectedWork';
+---
+
+<section
+  class="content-section split-section"
+  id="work"
+  aria-labelledby="work-title"
+>
+  <SignalRail label="Selected work" />
+  <div class="section-body">
+    <div class="section-heading">
+      <p class="section-kicker">The work behind reliable delivery</p>
+      <h2 id="work-title">Selected work</h2>
+      <p class="section-intro">
+        Leadership, shared foundations, and tools for software used in live
+        production.
+      </p>
+    </div>
+    <div class="work-list">
+      {selectedWork.map((item) => (
+        <article class="work-story" aria-labelledby={`${item.id}-title`}>
+          <div class="story-route" aria-hidden="true">
+            <span class="route-pin"></span>
+          </div>
+          <div class="story-copy">
+            <p class="story-theme">{item.theme}</p>
+            <h3 id={`${item.id}-title`}>{item.title}</h3>
+            <p>{item.summary}</p>
+            <p class="story-detail">{item.detail}</p>
+            <div
+              class="route-steps"
+              role="img"
+              aria-label={`Work flow: ${item.route.join(', ')}`}
+            >
+              {item.route.map((step) => (
+                <span>{step}</span>
+              ))}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

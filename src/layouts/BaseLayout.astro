@@ -1,0 +1,59 @@
+---
+import '../styles/global.css';
+import { Font } from 'astro:assets';
+import SiteHeader from '../components/SiteHeader.astro';
+import { person, site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  socialImage?: string;
+}
+
+const {
+  title = site.title,
+  description = site.description,
+  socialImage = '/social-card.png',
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const socialUrl = new URL(socialImage, site.url).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <Font cssVariable="--font-archivo" preload />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3f7f8" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialUrl} />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(person)}
+    ></script>
+    <title>{title} · {site.name}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <div id="top"></div>
+    <SiteHeader />
+    <slot />
+  </body>
+</html>

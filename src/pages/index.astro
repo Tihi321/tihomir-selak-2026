@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactLinks from '../components/ContactLinks.astro';
+import ExperienceTimeline from '../components/ExperienceTimeline.astro';
+import HowIWork from '../components/HowIWork.astro';
+import SelectedWork from '../components/SelectedWork.astro';
+import SignalRail from '../components/SignalRail.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { site } from '../data/site';
+---
+
+<BaseLayout>
+  <main id="main" class="wrap page-main">
+    <section class="hero split-section" aria-labelledby="hero-title">
+      <SignalRail label="Software delivery" />
+      <div class="hero-copy">
+        <p class="section-kicker">
+          Development Team Lead · Senior Software Engineer
+        </p>
+        <h1 id="hero-title">
+          I lead teams and build software for systems that have to work live.
+        </h1>
+        <p class="hero-intro">
+          I’m Tihomir Selak. Employed by TrackMen GmbH and working with its
+          sister company Pixotope, I build and lead delivery across the software
+          behind real-time augmented reality and virtual-production workflows.
+        </p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#work">
+            View selected work <span aria-hidden="true">↓</span>
+          </a>
+          <a class="button button-secondary" href="#contact">
+            Contact me <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <ul class="hero-utilities" aria-label="Quick links">
+          <li>
+            <a href={site.github}>GitHub</a>
+          </li>
+          <li>
+            <a href={site.linkedin}>LinkedIn</a>
+          </li>
+        </ul>
+      </div>
+      <div class="hero-route" aria-hidden="true">
+        <span class="route-orbit"></span>
+        <span class="route-track"></span>
+        <span class="route-endpoint"></span>
+        <span class="route-caption">Intent → delivery</span>
+      </div>
+    </section>
+    <SelectedWork />
+    <HowIWork />
+    <ExperienceTimeline />
+  </main>
+  <SiteFooter>
+    <ContactLinks />
+  </SiteFooter>
+</BaseLayout>
