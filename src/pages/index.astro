@@ -2,6 +2,7 @@
 import DiscoverySketch from '../components/system/diagrams/DiscoverySketch.astro';
 import ExperienceList from '../components/system/ExperienceList.astro';
 import IndexGrid from '../components/system/IndexGrid.astro';
+import BrainNetwork from '../components/system/BrainNetwork.astro';
 import Section from '../components/system/Section.astro';
 import SiteFooter from '../components/system/SiteFooter.astro';
 import SiteHeader from '../components/system/SiteHeader.astro';
@@ -65,6 +66,9 @@ const steps = [
           </div>
         </dl>
       </div>
+      <div class="intro__art" aria-hidden="true">
+        <BrainNetwork />
+      </div>
     </section>
 
     <div class="wrap">
@@ -127,6 +131,10 @@ const steps = [
     grid-column: 1 / -1;
     min-width: 0;
     align-content: start;
+  }
+
+  .intro__art {
+    display: none;
   }
 
   .intro__lead {
@@ -217,8 +225,44 @@ const steps = [
   }
 
   @media (min-width: 1024px) {
+    /* Body children join the intro grid; the art takes columns 10-12. */
+    .intro {
+      row-gap: var(--space-5);
+    }
+
     .intro__body {
+      display: contents;
+    }
+
+    .intro__body > h1,
+    .intro__lead,
+    .intro__detail {
+      grid-column: 3 / span 7;
+    }
+
+    .intro__body > h1 {
+      grid-row: 1;
+    }
+
+    .intro__lead {
+      grid-row: 2;
+    }
+
+    .intro__detail {
+      grid-row: 3;
+    }
+
+    .intro__slots {
       grid-column: 3 / span 10;
+      grid-row: 4;
+    }
+
+    .intro__art {
+      display: block;
+      grid-column: 10 / span 3;
+      grid-row: 1 / span 3;
+      align-self: start;
+      min-width: 0;
     }
 
     .more__link {

@@ -1,0 +1,203 @@
+---
+---
+
+<div class="site-controls">
+  <button
+    class="site-controls__button"
+    type="button"
+    data-theme-toggle
+    aria-label="Switch to dark theme"
+  >
+    <svg
+      viewBox="0 0 20 20"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.25"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g class="site-controls__moon">
+        <path d="M16.5 11.8A6.8 6.8 0 0 1 8.2 3.5a6.8 6.8 0 1 0 8.3 8.3Z"></path>
+      </g>
+      <g class="site-controls__sun">
+        <circle cx="10" cy="10" r="3.4"></circle>
+        <path d="M10 2.2v1.8M10 16v1.8M2.2 10H4M16 10h1.8M4.5 4.5l1.3 1.3M14.2 14.2l1.3 1.3M4.5 15.5l1.3-1.3M14.2 5.8l1.3-1.3"></path>
+      </g>
+    </svg>
+  </button>
+  <button
+    class="site-controls__button"
+    type="button"
+    data-field-toggle
+    aria-label="Background animation"
+    aria-pressed="true"
+  >
+    <svg
+      viewBox="0 0 20 20"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.25"
+      stroke-linecap="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M4.5 14.5 8 6.5l6 2.5 1.5 6M8 6.5l-3.5 8M8 6.5 14 9"></path>
+      <circle
+        cx="4.5"
+        cy="14.5"
+        r="1.6"
+        fill="currentColor"
+        stroke="none"
+      ></circle>
+      <circle
+        cx="8"
+        cy="6.5"
+        r="1.6"
+        fill="currentColor"
+        stroke="none"
+      ></circle>
+      <circle cx="14" cy="9" r="1.6" fill="currentColor" stroke="none"></circle>
+      <circle
+        cx="15.5"
+        cy="14.5"
+        r="1.6"
+        fill="currentColor"
+        stroke="none"
+      ></circle>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .site-controls {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  /* Without JS the buttons would do nothing, so they stay hidden. */
+  :global(:root:not([data-js])) .site-controls {
+    display: none;
+  }
+
+  .site-controls__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    color: var(--c-graphite);
+    background: transparent;
+    border: var(--border-hair);
+    border-radius: var(--radius-1);
+    cursor: pointer;
+    transition:
+      color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease);
+  }
+
+  .site-controls__button:hover {
+    color: var(--c-paper-bright);
+    border-color: var(--c-rule-strong);
+  }
+
+  .site-controls__button[aria-pressed='false'] {
+    opacity: 0.7;
+  }
+
+  /* The icon shows the theme the button switches to: moon while light. */
+  .site-controls__sun {
+    display: none;
+  }
+
+  :global(:root[data-theme='dark']) .site-controls__sun {
+    display: inline;
+  }
+
+  :global(:root[data-theme='dark']) .site-controls__moon {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .site-controls__sun {
+      display: inline;
+    }
+
+    :global(:root:not([data-theme])) .site-controls__moon {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const dark = matchMedia('(prefers-color-scheme: dark)');
+  const metas = document.querySelectorAll<HTMLMetaElement>(
+    'meta[name="theme-color"]',
+  );
+  const themeButton = document.querySelector<HTMLButtonElement>(
+    '[data-theme-toggle]',
+  );
+  const fieldButton = document.querySelector<HTMLButtonElement>(
+    '[data-field-toggle]',
+  );
+  const colors = { dark: '#0A1020', light: '#EEF2F8' } as const;
+
+  const store = (key: string, value: string) => {
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // Storage can be blocked. The choice then lasts for this page only.
+    }
+  };
+
+  const explicit = () => {
+    const value = root.getAttribute('data-theme');
+    return value === 'light' || value === 'dark' ? value : null;
+  };
+  const effective = () => explicit() ?? (dark.matches ? 'dark' : 'light');
+
+  const syncTheme = () => {
+    const theme = effective();
+    themeButton?.setAttribute(
+      'aria-label',
+      theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme',
+    );
+    // With no explicit choice the media-scoped metas already follow the OS.
+    const chosen = explicit();
+    if (chosen) {
+      metas.forEach((meta) => meta.setAttribute('content', colors[chosen]));
+    }
+  };
+
+  const syncField = () => {
+    fieldButton?.setAttribute(
+      'aria-pressed',
+      String(root.getAttribute('data-field') !== 'off'),
+    );
+  };
+
+  themeButton?.addEventListener('click', () => {
+    const next = effective() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    store('ts-theme', next);
+    syncTheme();
+  });
+
+  fieldButton?.addEventListener('click', () => {
+    const next = root.getAttribute('data-field') === 'off' ? 'on' : 'off';
+    root.setAttribute('data-field', next);
+    store('ts-field', next);
+    syncField();
+  });
+
+  dark.addEventListener('change', syncTheme);
+  syncTheme();
+  syncField();
+</script>

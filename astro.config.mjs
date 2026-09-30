@@ -4,6 +4,12 @@ import { defineConfig, fontProviders } from 'astro/config';
 export default defineConfig({
   site: 'https://tihomir-selak.from.hr',
   output: 'static',
+  vite: {
+    build: {
+      // CSP is script-src 'self': never inline small processed scripts.
+      assetsInlineLimit: 0,
+    },
+  },
   integrations: [
     sitemap({
       // The style tile is a private review page, keep it out of the sitemap.

@@ -8,8 +8,10 @@ import { readFileSync } from 'node:fs';
 const toml = readFileSync('netlify.toml', 'utf8');
 const csp = toml.match(/Content-Security-Policy\s*=\s*"([^"]+)"/)?.[1];
 
-// --c-carbon in src/styles/system/tokens.css is #0f1215.
-const carbon = 'rgb(15, 18, 21)';
+// Dark --c-carbon in src/styles/system/tokens.css is #0a1020. The default
+// Playwright scheme is light, so pin dark.
+test.use({ colorScheme: 'dark' });
+const carbon = 'rgb(10, 16, 32)';
 
 for (const path of ['/', '/404.html', '/design']) {
   test(`renders styled with no CSP violations at ${path}`, async ({ page }) => {
