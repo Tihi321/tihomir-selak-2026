@@ -1,59 +1,228 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import ContactLinks from '../components/ContactLinks.astro';
-import ExperienceTimeline from '../components/ExperienceTimeline.astro';
-import HowIWork from '../components/HowIWork.astro';
-import SelectedWork from '../components/SelectedWork.astro';
-import SignalRail from '../components/SignalRail.astro';
-import SiteFooter from '../components/SiteFooter.astro';
+import DiscoverySketch from '../components/system/diagrams/DiscoverySketch.astro';
+import ExperienceList from '../components/system/ExperienceList.astro';
+import IndexGrid from '../components/system/IndexGrid.astro';
+import Section from '../components/system/Section.astro';
+import SiteFooter from '../components/system/SiteFooter.astro';
+import SiteHeader from '../components/system/SiteHeader.astro';
+import { experience } from '../data/experience';
 import { site } from '../data/site';
+import { work } from '../data/work';
+import { writing } from '../data/writing';
+import SystemLayout from '../layouts/SystemLayout.astro';
+
+const steps = [
+  'Clarify the operational problem and constraints.',
+  'Turn ambiguity into decisions and executable work.',
+  "Match ownership to engineers' strengths and growth goals.",
+  'Keep delivery observable through review, tests, documentation, and feedback.',
+];
 ---
 
-<BaseLayout>
-  <main id="main" class="wrap page-main">
-    <section class="hero split-section" aria-labelledby="hero-title">
-      <SignalRail label="Software delivery" />
-      <div class="hero-copy">
-        <p class="section-kicker">
-          Development Team Lead · Senior Software Engineer
+<SystemLayout>
+  <SiteHeader />
+
+  <main id="main">
+    <section class="intro wrap grid-12" aria-labelledby="intro-title">
+      <div class="intro__body">
+        <h1 id="intro-title">Tihomir Selak</h1>
+        <p class="intro__lead">{site.role}</p>
+        <p class="intro__detail">
+          At Pixotope I lead a frontend team and stay hands-on across
+          TypeScript, React, Node.js, Rust and Python, building the control,
+          service and tooling layers behind real-time AR and virtual production.
+          Before software I worked in video production and live AV.
         </p>
-        <h1 id="hero-title">
-          I lead teams and build software for systems that have to work live.
-        </h1>
-        <p class="hero-intro">
-          I’m Tihomir Selak. Employed by TrackMen GmbH and working with its
-          sister company Pixotope, I build and lead delivery across the software
-          behind real-time augmented reality and virtual-production workflows.
-        </p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#work">
-            View selected work <span aria-hidden="true">↓</span>
-          </a>
-          <a class="button button-secondary" href="#contact">
-            Contact me <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-        <ul class="hero-utilities" aria-label="Quick links">
-          <li>
-            <a href={site.github}>GitHub</a>
-          </li>
-          <li>
-            <a href={site.linkedin}>LinkedIn</a>
-          </li>
-        </ul>
-      </div>
-      <div class="hero-route" aria-hidden="true">
-        <span class="route-orbit"></span>
-        <span class="route-track"></span>
-        <span class="route-endpoint"></span>
-        <span class="route-caption">Intent → delivery</span>
+        <dl class="intro__slots">
+          <div class="intro__slot">
+            <dt>Now</dt>
+            <dd>{site.now}</dd>
+          </div>
+          <div class="intro__slot">
+            <dt>Based</dt>
+            <dd>{site.based}</dd>
+          </div>
+          <div class="intro__slot">
+            <dt>Elsewhere</dt>
+            <dd>
+              <ul class="intro__links">
+                <li>
+                  <a href={`mailto:${site.email}`}>Email</a>
+                </li>
+                <li>
+                  <a href={site.linkedin}>LinkedIn</a>
+                </li>
+                <li>
+                  <a href={site.github}>GitHub</a>
+                </li>
+                <li>
+                  <a href={site.blog}>Blog</a>
+                </li>
+              </ul>
+            </dd>
+          </div>
+        </dl>
       </div>
     </section>
-    <SelectedWork />
-    <HowIWork />
-    <ExperienceTimeline />
+
+    <div class="wrap">
+      <Section id="work" label="Work and writing">
+        <p class="note">
+          Work at Pixotope since 2020, with writing from the blog.
+        </p>
+        <Fragment slot="wide">
+          <IndexGrid entries={[...work, ...writing]} />
+          <div class="more grid-12">
+            <p class="more__link">
+              <a href={`${site.blog}/writing/`}>All writing on the blog</a>
+            </p>
+          </div>
+        </Fragment>
+      </Section>
+
+      <Section id="systems" label="Systems">
+        <p class="prose">
+          I build the discovery, messaging, services and diagnostics that let
+          studio machines find each other and talk. Fig. 1 is a generic sketch
+          of that shape, not a product architecture.
+        </p>
+        <DiscoverySketch />
+      </Section>
+
+      <Section id="approach" label="Approach">
+        <ol class="steps">
+          {steps.map((step, index) => (
+            <li class="steps__item">
+              <span class="steps__ordinal" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span class="steps__text">{step}</span>
+            </li>
+          ))}
+        </ol>
+        <p class="prose">
+          I lead two engineers today and have supported up to five, with regular
+          one-to-ones and performance responsibility. Engineers shape the work;
+          I match it to their strengths and clear what blocks them.
+        </p>
+      </Section>
+
+      <Section id="experience" label="Experience">
+        <ExperienceList items={experience} />
+      </Section>
+    </div>
   </main>
-  <SiteFooter>
-    <ContactLinks />
-  </SiteFooter>
-</BaseLayout>
+
+  <SiteFooter />
+</SystemLayout>
+
+<style>
+  .intro {
+    padding-block: var(--space-9) var(--space-8);
+  }
+
+  .intro__body {
+    display: grid;
+    gap: var(--space-5);
+    grid-column: 1 / -1;
+    min-width: 0;
+    align-content: start;
+  }
+
+  .intro__lead {
+    max-width: 30ch;
+    color: var(--c-paper-bright);
+    font-size: var(--step-3);
+    line-height: var(--lh-3);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .intro__detail {
+    max-width: var(--measure);
+    color: var(--c-paper);
+    font-size: var(--step-0);
+    line-height: var(--lh-0);
+  }
+
+  .intro__slots {
+    display: grid;
+    margin-top: var(--space-4);
+    border-top: var(--border-hair);
+  }
+
+  .intro__slot {
+    display: grid;
+    grid-template-columns: 11ch minmax(0, 1fr);
+    column-gap: var(--space-5);
+    align-items: baseline;
+    padding: var(--space-3) 0;
+    border-bottom: var(--border-hair);
+  }
+
+  .intro__slot dt {
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+  }
+
+  .intro__slot dd {
+    margin: 0;
+    color: var(--c-paper);
+  }
+
+  .intro__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+  }
+
+  .note {
+    max-width: var(--measure);
+    color: var(--c-graphite);
+    font-size: var(--step--1);
+    line-height: var(--lh--1);
+  }
+
+  .more {
+    margin-top: var(--space-7);
+  }
+
+  .more__link {
+    grid-column: 1 / -1;
+  }
+
+  .steps {
+    display: grid;
+    max-width: var(--measure);
+    border-top: var(--border-hair);
+  }
+
+  .steps__item {
+    display: grid;
+    grid-template-columns: 4ch minmax(0, 1fr);
+    column-gap: var(--space-4);
+    align-items: baseline;
+    padding: var(--space-3) 0;
+    border-bottom: var(--border-hair);
+  }
+
+  .steps__ordinal {
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (min-width: 1024px) {
+    .intro__body {
+      grid-column: 3 / span 10;
+    }
+
+    .more__link {
+      grid-column: 3 / span 10;
+    }
+  }
+</style>

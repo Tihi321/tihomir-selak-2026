@@ -1,0 +1,104 @@
+---
+import DiagramFrame from '../diagram/DiagramFrame.astro';
+import DgBoundary from '../diagram/DgBoundary.astro';
+import DgNode from '../diagram/DgNode.astro';
+import DgEdge from '../diagram/DgEdge.astro';
+
+const id = 'fig-discovery';
+---
+
+<DiagramFrame
+  id={id}
+  title="Discovery across studio machines"
+  description="Two Windows hosts each run a discovery daemon. On host A, a control UI talks to its daemon over ZeroMQ request and reply, and the daemon writes to a SQLite state store. The two daemons find each other with UDP broadcast, which is the path this figure explains. On host B, the daemon reports health to a third-party render engine."
+  caption="Fig. 1"
+  captionText="Discovery across studio machines. Generic sketch, not a product architecture."
+  viewBox="0 0 896 360"
+  minWidth={832}
+>
+  <DgBoundary x={24} y={32} w={520} h={296} label="host-a  windows" />
+  <DgBoundary x={664} y={32} w={208} h={296} label="host-b  windows" />
+
+  <DgNode
+    x={48}
+    y={96}
+    w={160}
+    h={64}
+    kind="ui"
+    label="Control UI"
+    sub="react / electron"
+  />
+  <DgNode
+    x={360}
+    y={96}
+    w={160}
+    h={64}
+    kind="service"
+    label="Discovery daemon"
+    sub="windows service"
+  />
+  <DgNode
+    x={360}
+    y={232}
+    w={160}
+    h={64}
+    kind="store"
+    label="State store"
+    sub="sqlite"
+  />
+  <DgNode
+    x={688}
+    y={96}
+    w={160}
+    h={64}
+    kind="service"
+    label="Discovery daemon"
+    sub="windows service"
+  />
+  <DgNode
+    x={688}
+    y={232}
+    w={160}
+    h={64}
+    kind="external"
+    label="Render engine"
+    sub="third-party"
+  />
+
+  <DgEdge
+    markerPrefix={id}
+    bidirectional
+    points={[
+      [208, 128],
+      [360, 128],
+    ]}
+    label="zeromq req/rep"
+  />
+  <DgEdge
+    markerPrefix={id}
+    points={[
+      [440, 160],
+      [440, 232],
+    ]}
+    label="writes"
+  />
+  <DgEdge
+    markerPrefix={id}
+    points={[
+      [768, 160],
+      [768, 232],
+    ]}
+    label="health"
+  />
+  <DgEdge
+    markerPrefix={id}
+    primary
+    bidirectional
+    style="dashed"
+    points={[
+      [520, 128],
+      [688, 128],
+    ]}
+    label="udp 41234"
+  />
+</DiagramFrame>

@@ -1,0 +1,18 @@
+---
+interface Props {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  label: string;
+}
+
+const { x, y, w, h, label } = Astro.props;
+---
+
+<g class="dg-boundary">
+  <rect class="dg-boundary__box" x={x} y={y} width={w} height={h} rx="0"></rect>
+  <text class="dg-boundary__label" x={x + 16} y={y + 24}>
+    {label}
+  </text>
+</g>

@@ -1,20 +1,35 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/system/SiteHeader.astro';
+import SystemLayout from '../layouts/SystemLayout.astro';
 ---
 
-<BaseLayout
+<SystemLayout
   title="Page not found"
-  description="This page is not here. Return to Tihomir Selak’s professional site."
+  description="This page is not here. Return to Tihomir Selak’s site."
 >
-  <main id="main" class="wrap not-found">
-    <p class="section-kicker">404 · Route not found</p>
+  <SiteHeader />
+  <main id="main" class="not-found wrap">
     <h1>This page has no destination.</h1>
-    <p>
+    <p class="not-found__text">
       The link may have changed. You can head back to the home page and choose
       another route.
     </p>
-    <a class="button button-primary" href="/">
-      Return home <span aria-hidden="true">↗</span>
-    </a>
+    <p>
+      <a href="/">Return home</a>
+    </p>
   </main>
-</BaseLayout>
+</SystemLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    gap: var(--space-5);
+    padding-block: var(--space-9);
+    min-height: 50vh;
+    align-content: start;
+  }
+
+  .not-found__text {
+    max-width: var(--measure);
+  }
+</style>

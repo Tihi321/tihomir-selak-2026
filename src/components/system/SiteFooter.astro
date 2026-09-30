@@ -1,0 +1,120 @@
+---
+import { site } from '../../data/site';
+---
+
+<footer class="site-footer wrap" id="contact" aria-labelledby="contact-title">
+  <div class="site-footer__grid grid-12">
+    <h2 class="site-footer__label" id="contact-title">
+      Contact
+    </h2>
+    <div class="site-footer__body">
+      <p class="site-footer__email">
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+      <ul class="site-footer__links">
+        <li>
+          <a href={site.linkedin}>LinkedIn</a>
+        </li>
+        <li>
+          <a href={site.github}>GitHub</a>
+        </li>
+        <li>
+          <a href={site.blog}>Blog</a>
+        </li>
+      </ul>
+      <p class="site-footer__location">{site.location}</p>
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <a class="site-footer__wordmark" href="/">
+      Tihomir Selak
+    </a>
+    <a class="site-footer__top" href="#top">
+      Back to top
+    </a>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: var(--space-7) var(--space-8);
+    border-top: var(--border-hair);
+  }
+
+  .site-footer__grid {
+    row-gap: var(--space-5);
+    padding-bottom: var(--space-7);
+  }
+
+  .site-footer__label {
+    max-width: none;
+    grid-column: 1 / -1;
+    font-size: var(--step-1);
+    line-height: var(--lh-1);
+    letter-spacing: -0.015em;
+  }
+
+  .site-footer__body {
+    display: grid;
+    gap: var(--space-4);
+    grid-column: 1 / -1;
+    min-width: 0;
+    align-content: start;
+  }
+
+  .site-footer__email {
+    font-size: var(--step-2);
+    line-height: var(--lh-2);
+    overflow-wrap: anywhere;
+  }
+
+  .site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+  }
+
+  .site-footer__location {
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-5);
+    padding-top: var(--space-5);
+    border-top: var(--border-hair);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+  }
+
+  .site-footer__wordmark {
+    color: var(--c-paper-bright);
+    font-family: var(--font-sans);
+    font-size: var(--step-0);
+    font-weight: 600;
+    font-stretch: 88%;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+
+  .site-footer__wordmark:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 1024px) {
+    .site-footer__label {
+      grid-column: 1 / span 2;
+    }
+
+    .site-footer__body {
+      grid-column: 3 / span 10;
+    }
+  }
+</style>

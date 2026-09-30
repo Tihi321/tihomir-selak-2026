@@ -1,0 +1,62 @@
+---
+import type { ProjectType } from '../../lib/entries';
+
+interface Props {
+  type: ProjectType;
+}
+
+const { type } = Astro.props;
+const labels: Record<ProjectType, string> = {
+  work: 'Work',
+  side: 'Side project',
+  interactive: 'Interactive',
+};
+---
+
+<span class="type-badge" data-type={type}>
+  <span class="type-badge__glyph" aria-hidden="true"></span>
+  <span>{labels[type]}</span>
+</span>
+
+<style>
+  .type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--c-paper);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+    white-space: nowrap;
+  }
+
+  /* Shape, not color, tells the types apart. */
+  .type-badge__glyph {
+    position: relative;
+    flex: none;
+    width: 10px;
+    height: 10px;
+    box-sizing: border-box;
+  }
+
+  [data-type='work'] .type-badge__glyph {
+    background: currentcolor;
+  }
+
+  [data-type='side'] .type-badge__glyph {
+    border: 1.5px solid currentcolor;
+  }
+
+  [data-type='interactive'] .type-badge__glyph {
+    background: currentcolor;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+
+  [data-type='interactive'] .type-badge__glyph::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--c-carbon);
+    clip-path: polygon(15% 24%, 66.5% 50%, 15% 76%);
+  }
+</style>

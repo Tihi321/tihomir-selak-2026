@@ -1,0 +1,141 @@
+---
+import './diagram.css';
+import DgEdge from './DgEdge.astro';
+
+const nodes = [
+  { kind: 'service', term: 'Service', desc: 'A process or daemon' },
+  { kind: 'store', term: 'Store', desc: 'Persistent state' },
+  { kind: 'ui', term: 'UI', desc: 'A user-facing app' },
+  { kind: 'external', term: 'External', desc: 'Not ours, outside the system' },
+] as const;
+
+const edges = [
+  {
+    key: 'solid',
+    term: 'Solid edge',
+    desc: 'Request and response',
+    style: 'solid',
+    primary: false,
+  },
+  {
+    key: 'dashed',
+    term: 'Dashed edge',
+    desc: 'Async or broadcast',
+    style: 'dashed',
+    primary: false,
+  },
+  {
+    key: 'primary',
+    term: 'Accent edge',
+    desc: 'The path being explained',
+    style: 'solid',
+    primary: true,
+  },
+] as const;
+---
+
+<figure class="dg-legend">
+  <figcaption class="dg-legend__title">Legend</figcaption>
+  <ul class="dg-legend__list">
+    {nodes.map((n) => (
+      <li class="dg-legend__item">
+        <svg
+          class="dg-legend__swatch"
+          viewBox="0 0 64 40"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <g class={`dg-node dg-node--${n.kind}`}>
+            <rect
+              class="dg-node__box"
+              x="4"
+              y="4"
+              width="56"
+              height="32"
+              rx="2"
+            />
+            {n.kind === 'store' && (
+              <line class="dg-node__rule" x1="4" y1="12" x2="60" y2="12" />
+            )}
+            {n.kind === 'ui' && (
+              <>
+                <line class="dg-node__rule" x1="4" y1="14" x2="60" y2="14" />
+                <circle class="dg-node__dot" cx="10" cy="9" r="1.5" />
+                <circle class="dg-node__dot" cx="16" cy="9" r="1.5" />
+                <circle class="dg-node__dot" cx="22" cy="9" r="1.5" />
+              </>
+            )}
+          </g>
+        </svg>
+        <span>
+          <span class="dg-legend__term">{n.term}</span>
+          <span class="dg-legend__desc">{n.desc}</span>
+        </span>
+      </li>
+    ))}
+    <li class="dg-legend__item">
+      <svg
+        class="dg-legend__swatch"
+        viewBox="0 0 64 40"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <g class="dg-boundary">
+          <rect
+            class="dg-boundary__box"
+            x="4"
+            y="4"
+            width="56"
+            height="32"
+            rx="0"
+          />
+        </g>
+      </svg>
+      <span>
+        <span class="dg-legend__term">Boundary</span>
+        <span class="dg-legend__desc">A machine or network</span>
+      </span>
+    </li>
+    {edges.map((e) => (
+      <li class="dg-legend__item">
+        <svg
+          class="dg-legend__swatch"
+          viewBox="0 0 64 40"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <defs>
+            <marker
+              id={`dg-legend-${e.key}-arrow${e.primary ? '-primary' : ''}`}
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="10"
+              markerHeight="10"
+              markerUnits="userSpaceOnUse"
+              orient="auto-start-reverse"
+            >
+              <path
+                class={e.primary ? 'dg-marker dg-marker--primary' : 'dg-marker'}
+                d="M2 1.5 L8.5 5 L2 8.5"
+              />
+            </marker>
+          </defs>
+          <DgEdge
+            points={[
+              [4, 20],
+              [60, 20],
+            ]}
+            style={e.style}
+            primary={e.primary}
+            markerPrefix={`dg-legend-${e.key}`}
+          />
+        </svg>
+        <span>
+          <span class="dg-legend__term">{e.term}</span>
+          <span class="dg-legend__desc">{e.desc}</span>
+        </span>
+      </li>
+    ))}
+  </ul>
+</figure>

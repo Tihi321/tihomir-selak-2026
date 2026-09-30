@@ -11,6 +11,11 @@ test('has a visible keyboard focus indicator', async ({ page }) => {
     'outline-style',
     'solid',
   );
+  // The focus ring is the phosphor accent (#E0A458).
+  await expect(page.getByRole('link', { name: 'Skip to content' })).toHaveCSS(
+    'outline-color',
+    'rgb(224, 164, 88)',
+  );
 });
 
 test('has no serious or critical automated accessibility violations', async ({

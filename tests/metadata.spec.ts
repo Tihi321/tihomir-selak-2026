@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('publishes canonical, social, and Person metadata', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/Engineering leadership.*Tihomir Selak/);
+  await expect(page).toHaveTitle(/Tihomir Selak | Development Team Lead/);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     'href',
     'https://tihomir-selak.from.hr/',
@@ -13,7 +13,11 @@ test('publishes canonical, social, and Person metadata', async ({ page }) => {
   );
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
     'content',
-    /Engineering leadership/,
+    /Tihomir Selak | Development Team Lead/,
+  );
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
+    'content',
+    '#0F1215',
   );
   await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
     'content',
@@ -29,10 +33,11 @@ test('publishes canonical, social, and Person metadata', async ({ page }) => {
     .evaluate((node) => JSON.parse(node.textContent ?? '{}'));
   expect(person['@type']).toBe('Person');
   expect(person.name).toBe('Tihomir Selak');
+  expect(person.jobTitle).toBe('Development Team Lead');
   expect(person.sameAs).toContain('https://github.com/Tihi321');
 });
 
-test('loads Archivo and page assets from the local site origin', async ({
+test('loads Archivo, Martian Mono and page assets from the local site origin', async ({
   page,
 }) => {
   const externalRequests: string[] = [];
@@ -55,6 +60,13 @@ test('loads Archivo and page assets from the local site origin', async ({
     loadedFonts.some(
       ({ family, status }) =>
         family.startsWith('Archivo-') && status === 'loaded',
+    ),
+  ).toBe(true);
+  expect(
+    loadedFonts.some(
+      ({ family, status }) =>
+        family.replace(/["']/g, '').startsWith('Martian Mono') &&
+        status === 'loaded',
     ),
   ).toBe(true);
   expect(externalRequests).toEqual([]);

@@ -1,0 +1,23 @@
+---
+import type { WritingEntry } from '../../lib/entries';
+import WritingItem from './WritingItem.astro';
+
+interface Props {
+  entries: readonly WritingEntry[];
+  label?: string;
+}
+
+const { entries, label = 'Writing' } = Astro.props;
+---
+
+<ul class="writing-list" aria-label={label}>
+  {entries.map((entry) => (
+    <WritingItem entry={entry} />
+  ))}
+</ul>
+
+<style>
+  .writing-list {
+    border-top: var(--border-hair);
+  }
+</style>

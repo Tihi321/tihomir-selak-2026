@@ -1,0 +1,825 @@
+---
+import DgLegend from '../components/system/diagram/DgLegend.astro';
+import DiscoverySketch from '../components/system/diagrams/DiscoverySketch.astro';
+import IndexGrid from '../components/system/IndexGrid.astro';
+import ProjectCard from '../components/system/ProjectCard.astro';
+import Section from '../components/system/Section.astro';
+import WritingList from '../components/system/WritingList.astro';
+import { cardVariants, indexEntries, writingRows } from '../data/designSamples';
+import SystemLayout from '../layouts/SystemLayout.astro';
+
+/** WCAG 2.x relative luminance and contrast ratio, computed at build time. */
+type Rgb = readonly [number, number, number];
+
+const parseHex = (hex: string): Rgb => {
+  const value = Number.parseInt(hex.slice(1), 16);
+  return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+};
+const channel = (value: number) => {
+  const c = value / 255;
+  return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+};
+const luminance = ([r, g, b]: Rgb) =>
+  0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+const ratio = (a: Rgb, b: Rgb) => {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x) as [
+    number,
+    number,
+  ];
+  return (hi + 0.05) / (lo + 0.05);
+};
+const toHex = ([r, g, b]: Rgb) =>
+  `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+
+const carbon = parseHex('#0F1215');
+const phosphor = parseHex('#E0A458');
+// phosphor-dim is 14% phosphor over carbon, so composite it before measuring.
+const phosphorDim = carbon.map((base, i) =>
+  Math.round(base * 0.86 + phosphor[i]! * 0.14),
+) as unknown as Rgb;
+
+const swatches = [
+  { name: '--c-carbon', hex: '#0F1215', role: 'Page background' },
+  {
+    name: '--c-slate',
+    hex: '#171B1F',
+    role: 'Preview frames, diagram nodes, code',
+  },
+  { name: '--c-rule', hex: '#272D33', role: 'Hairlines, tag borders' },
+  {
+    name: '--c-rule-strong',
+    hex: '#3A424A',
+    role: 'Diagram strokes, focused borders',
+  },
+  { name: '--c-graphite', hex: '#8E969E', role: 'Muted text and metadata' },
+  { name: '--c-paper', hex: '#E8E4DA', role: 'Body text' },
+  { name: '--c-paper-bright', hex: '#F6F3EC', role: 'Headings' },
+  {
+    name: '--c-phosphor',
+    hex: '#E0A458',
+    role: 'The one accent: links, focus ring, primary diagram path',
+  },
+  {
+    name: '--c-phosphor-dim',
+    hex: 'rgb(224 164 88 / 14%)',
+    role: 'Selection and accent fills',
+    rgb: phosphorDim,
+    swatch: toHex(phosphorDim),
+  },
+].map((swatch) => {
+  const rgb = swatch.rgb ?? parseHex(swatch.hex);
+  return {
+    ...swatch,
+    fill: swatch.swatch ?? swatch.hex,
+    contrast: ratio(rgb, carbon).toFixed(1),
+  };
+});
+
+const steps = [
+  {
+    token: '--step--2',
+    px: 12,
+    lh: 1.4,
+    use: 'Mono meta, tags, captions',
+    family: 'mono',
+  },
+  {
+    token: '--step--1',
+    px: 14,
+    lh: 1.45,
+    use: 'Secondary text',
+    family: 'body',
+  },
+  { token: '--step-0', px: 17, lh: 1.6, use: 'Body', family: 'body' },
+  {
+    token: '--step-1',
+    px: 21,
+    lh: 1.35,
+    use: 'Card and entry titles',
+    family: 'heading',
+  },
+  {
+    token: '--step-2',
+    px: 26,
+    lh: 1.25,
+    use: 'Third-level headings',
+    family: 'heading',
+  },
+  {
+    token: '--step-3',
+    px: 33,
+    lh: 1.15,
+    use: 'Second-level headings',
+    family: 'heading',
+  },
+  {
+    token: '--step-4',
+    px: 42,
+    lh: 1.08,
+    use: 'Page title on mobile',
+    family: 'heading',
+  },
+  {
+    token: '--step-5',
+    px: 56,
+    lh: 1.02,
+    use: 'Page title on desktop',
+    family: 'heading',
+  },
+] as const;
+const lhVar = (token: string) => token.replace('--step-', '--lh-');
+
+const spaces = [4, 8, 12, 16, 24, 32, 48, 64, 96, 128].map((px, i) => ({
+  token: `--space-${i + 1}`,
+  px,
+}));
+
+const radii = [
+  { token: '--radius-0', value: '0', use: 'Rules and boundaries' },
+  { token: '--radius-1', value: '2px', use: 'Tags, badges, diagram nodes' },
+  { token: '--radius-2', value: '4px', use: 'Preview frames, code blocks' },
+];
+
+const borders = [
+  { token: '--border-hair', value: '1px solid rule', use: 'Hairlines, tags' },
+  {
+    token: '--border-strong',
+    value: '1px solid rule-strong',
+    use: 'Diagram strokes',
+  },
+  {
+    token: '--border-boundary',
+    value: '1px dashed rule-strong',
+    use: 'Machine or network boundary',
+  },
+];
+
+const motion = [
+  { token: '--dur-fast', value: '120ms', use: 'Link color, underline offset' },
+  {
+    token: '--dur-base',
+    value: '180ms',
+    use: 'Border color on preview frames',
+  },
+  {
+    token: '--ease',
+    value: 'cubic-bezier(.2,.7,.2,1)',
+    use: 'All transitions',
+  },
+];
+
+const rustSample = `use std::net::UdpSocket;
+
+fn announce(name: &str) -> std::io::Result<()> {
+    let socket = UdpSocket::bind("0.0.0.0:0")?;
+    socket.set_broadcast(true)?;
+    socket.send_to(name.as_bytes(), "255.255.255.255:5555")?;
+    Ok(())
+}
+`;
+---
+
+<SystemLayout
+  title="Style tile"
+  description="Design system draft 1 for Tihomir Selak's site: color, type, space, components and one architecture diagram, with placeholder content."
+  noindex
+>
+  <header class="tile-header wrap">
+    <a class="tile-wordmark" href="/">
+      Tihomir Selak
+    </a>
+    <p class="tile-header__meta">
+      <span>Design system, draft 1</span>
+      <time datetime="2026-09-30">2026-09-30</time>
+    </p>
+  </header>
+
+  <main id="main">
+    <div class="wrap tile-hero">
+      <h1>Style tile</h1>
+      <p class="tile-hero__intro">
+        This page shows the visual system for the next version of the site:
+        color, type, space, the entry components and one architecture diagram.
+        Every project, title, date and reading time here is placeholder content,
+        and the two interactive projects are invented.
+      </p>
+    </div>
+
+    <div class="wrap">
+      <Section id="color" label="Color">
+        <p class="tile-note">
+          Dark only. Phosphor is the single accent, and it only marks what you
+          can interact with or the path a diagram is explaining. Contrast is
+          measured against carbon.
+        </p>
+        <ul class="swatches">
+          {swatches.map((swatch) => (
+            <li class="swatch">
+              <span
+                class="swatch__chip"
+                style={`background: ${swatch.fill}`}
+                aria-hidden="true"
+              />
+              <span class="swatch__name">{swatch.name}</span>
+              <span class="swatch__hex">{swatch.hex}</span>
+              <span class="swatch__role">{swatch.role}</span>
+              <span class="swatch__ratio">{swatch.contrast}:1</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section id="type" label="Type">
+        <p class="tile-note">
+          Archivo for reading and headings, Martian Mono for anything that is
+          data. Headings are weight 600 and tightly tracked. Mono is always set
+          a step smaller because it runs wide.
+        </p>
+        <h3 class="tile-sub">Scale</h3>
+        <ul class="type-scale">
+          {steps.map((step) => (
+            <li class="type-step">
+              <span class="type-step__spec">
+                <span>{step.token}</span>
+                <span>
+                  {step.px}px / {step.lh}
+                </span>
+              </span>
+              <span
+                class:list={['type-step__sample', `is-${step.family}`]}
+                style={`font-size: var(${step.token}); line-height: var(${lhVar(step.token)})`}
+              >
+                {step.family === 'mono'
+                  ? 'zmq://host-a:5555'
+                  : 'Signals between machines'}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <h3 class="tile-sub">Prose at the measure</h3>
+        <div class="prose">
+          <p>
+            Two clocks in the same room never quite agree. Nudge one of them
+            toward the ceiling and the disagreement grows, by an amount too
+            small to notice on any single day and large enough that a satellite
+            navigation system has to correct for it. The lesson is less about
+            clocks than about the word "now", which turns out to need an address
+            as well as a time.
+          </p>
+          <p>
+            Engineers who build live systems learn the same thing without the
+            relativity: every machine has its own idea of the present, and the
+            useful question is how far apart those ideas are allowed to drift.
+            This paragraph is placeholder text set at 66 characters per line.
+          </p>
+        </div>
+        <h3 class="tile-sub">Code</h3>
+        <pre
+          tabindex="0"
+          role="region"
+          aria-label="Rust code sample"
+        ><code class="language-rust" set:text={rustSample} /></pre>
+      </Section>
+
+      <Section id="space" label="Space, radii, borders">
+        <h3 class="tile-sub">Space, 4px base</h3>
+        <ul class="ruler">
+          {spaces.map((space) => (
+            <li class="ruler__row">
+              <span class="ruler__token">{space.token}</span>
+              <span class="ruler__px">{space.px}px</span>
+              <span
+                class="ruler__bar"
+                style={`width: var(${space.token})`}
+                aria-hidden="true"
+              />
+            </li>
+          ))}
+        </ul>
+        <h3 class="tile-sub">Radii</h3>
+        <ul class="samples">
+          {radii.map((radius) => (
+            <li class="sample">
+              <span
+                class="sample__box"
+                style={`border-radius: var(${radius.token})`}
+                aria-hidden="true"
+              />
+              <span class="sample__token">{radius.token}</span>
+              <span class="sample__value">{radius.value}</span>
+              <span class="sample__use">{radius.use}</span>
+            </li>
+          ))}
+        </ul>
+        <h3 class="tile-sub">Borders</h3>
+        <ul class="samples">
+          {borders.map((border) => (
+            <li class="sample">
+              <span
+                class="sample__box sample__box--border"
+                style={`border: var(${border.token})`}
+                aria-hidden="true"
+              />
+              <span class="sample__token">{border.token}</span>
+              <span class="sample__value">{border.value}</span>
+              <span class="sample__use">{border.use}</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section id="motion" label="Motion">
+        <p class="tile-note">
+          Motion only answers what the reader does: color, border and underline
+          changes on hover and focus. There are no entrance animations and no
+          scroll effects. Reduced motion sets durations to zero.
+        </p>
+        <table class="token-table">
+          <thead>
+            <tr>
+              <th scope="col">Token</th>
+              <th scope="col">Value</th>
+              <th scope="col">Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            {motion.map((row) => (
+              <tr>
+                <th scope="row">{row.token}</th>
+                <td>{row.value}</td>
+                <td>{row.use}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div class="motion-demo">
+          <a class="motion-demo__link" href="#motion">
+            Hover or focus this link
+          </a>
+          <a class="motion-demo__tile" href="#motion">
+            <span>Hover or focus this tile</span>
+            <span class="motion-demo__meta">border, 180ms</span>
+          </a>
+        </div>
+      </Section>
+
+      <Section id="project-card" label="Project card">
+        <p class="tile-note">
+          Four variants: a feature card with a demo still, a diagram preview, a
+          screenshot preview, and a compact card with no preview. The whole card
+          is one link, and hovering or focusing it highlights the frame.
+        </p>
+        <div class="card-grid">
+          {[
+            cardVariants[3],
+            cardVariants[0],
+            cardVariants[1],
+            cardVariants[2],
+          ].map((entry) => entry && <ProjectCard entry={entry} level={3} />)}
+        </div>
+      </Section>
+
+      <Section id="writing-list" label="Writing list">
+        <p class="tile-note">
+          Text only. Date, title, topic and reading time sit in aligned columns,
+          and stack on narrow screens. The last title is a real one from the old
+          site; the rest are placeholders.
+        </p>
+        <WritingList entries={writingRows} label="Sample writing" />
+      </Section>
+
+      <Section id="index" label="Index">
+        <p class="tile-note">
+          Entries are grouped by year, newest first. Consecutive projects form a
+          2-up run. A feature card, or a project that is alone in its run, spans
+          the full width: horizontal with a preview, wide and compact without
+          one. Consecutive writing entries share one ledger block.
+        </p>
+        <ul class="breakpoint-notes">
+          <li>
+            <span class="breakpoint-notes__range">1024px and up</span>
+            <span>
+              The year sits in a sticky 2-column margin and entries use the
+              other 10.
+            </span>
+          </li>
+          <li>
+            <span class="breakpoint-notes__range">720px to 1023px</span>
+            <span>
+              The margin becomes a heading row above each year. Project runs
+              stay 2-up, feature cards go vertical, and wide cards keep two
+              halves.
+            </span>
+          </li>
+          <li>
+            <span class="breakpoint-notes__range">Under 720px</span>
+            <span>
+              One column. The year heading sticks to the top on a carbon
+              background, and writing rows stack.
+            </span>
+          </li>
+        </ul>
+        <Fragment slot="wide">
+          <IndexGrid entries={indexEntries} />
+        </Fragment>
+      </Section>
+
+      <Section id="diagrams" label="Diagrams">
+        <div class="tile-diagrams">
+          <p class="tile-note">
+            The diagram is the one bold element. Solid edges are request and
+            response, dashed edges are async or broadcast, and the phosphor edge
+            is the path being explained. On narrow screens the figure scrolls
+            inside its own frame.
+          </p>
+          <DgLegend />
+          <DiscoverySketch />
+        </div>
+      </Section>
+    </div>
+  </main>
+
+  <footer class="tile-footer wrap">
+    <p>Placeholder content. This page is not indexed.</p>
+  </footer>
+</SystemLayout>
+
+<style>
+  .tile-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-5);
+    padding-block: var(--space-5);
+    border-bottom: var(--border-hair);
+  }
+
+  .tile-wordmark {
+    color: var(--c-paper-bright);
+    font-weight: 600;
+    font-stretch: 88%;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+
+  .tile-wordmark:hover {
+    text-decoration: underline;
+  }
+
+  .tile-header__meta {
+    display: flex;
+    gap: var(--space-5);
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+  }
+
+  .tile-hero {
+    display: grid;
+    gap: var(--space-5);
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .tile-hero__intro {
+    max-width: var(--measure);
+    font-size: var(--step-1);
+    line-height: var(--lh-1);
+  }
+
+  .tile-note {
+    max-width: var(--measure);
+    color: var(--c-graphite);
+    font-size: var(--step--1);
+    line-height: var(--lh--1);
+  }
+
+  .tile-sub {
+    max-width: none;
+    margin-top: var(--space-4);
+    font-size: var(--step-0);
+    line-height: var(--lh-0);
+    letter-spacing: 0;
+  }
+
+  /* Color */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+    gap: var(--space-5) var(--col-gap);
+  }
+
+  .swatch {
+    display: grid;
+    gap: var(--space-1);
+    align-content: start;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+  }
+
+  .swatch__chip {
+    height: 64px;
+    margin-bottom: var(--space-2);
+    border: var(--border-strong);
+    border-radius: var(--radius-2);
+  }
+
+  .swatch__name {
+    color: var(--c-paper-bright);
+  }
+
+  .swatch__hex,
+  .swatch__ratio {
+    color: var(--c-graphite);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .swatch__role {
+    max-width: 30ch;
+    margin-block: var(--space-1);
+    color: var(--c-paper);
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    line-height: var(--lh--1);
+  }
+
+  /* Type */
+  .type-scale {
+    border-top: var(--border-hair);
+  }
+
+  .type-step {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+    padding: var(--space-3) 0;
+    border-bottom: var(--border-hair);
+  }
+
+  .type-step__spec {
+    display: flex;
+    gap: var(--space-4);
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+  }
+
+  .type-step__spec span:first-child {
+    min-width: 10ch;
+  }
+
+  .type-step__sample {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .type-step__sample.is-heading {
+    color: var(--c-paper-bright);
+    font-weight: 600;
+    font-stretch: 88%;
+    letter-spacing: -0.02em;
+  }
+
+  .type-step__sample.is-mono {
+    color: var(--c-paper);
+    font-family: var(--font-mono);
+  }
+
+  @media (min-width: 720px) {
+    .type-step {
+      grid-template-columns: 22ch minmax(0, 1fr);
+      align-items: baseline;
+      column-gap: var(--space-5);
+    }
+  }
+
+  /* Space, radii, borders */
+  .ruler {
+    border-top: var(--border-hair);
+  }
+
+  .ruler__row {
+    display: grid;
+    grid-template-columns: 14ch 6ch minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: var(--border-hair);
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+  }
+
+  .ruler__bar {
+    display: block;
+    height: 8px;
+    background: var(--c-graphite);
+  }
+
+  @media (max-width: 719.98px) {
+    .ruler__row {
+      grid-template-columns: 14ch minmax(0, 1fr);
+    }
+
+    .ruler__bar {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .samples {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+    gap: var(--space-5) var(--col-gap);
+  }
+
+  .sample {
+    display: grid;
+    gap: var(--space-1);
+    align-content: start;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+  }
+
+  .sample__box {
+    display: block;
+    height: 64px;
+    margin-bottom: var(--space-2);
+    background: var(--c-slate);
+    border: var(--border-strong);
+  }
+
+  .sample__box--border {
+    background: transparent;
+  }
+
+  .sample__token {
+    color: var(--c-paper-bright);
+  }
+
+  .sample__value,
+  .sample__use {
+    color: var(--c-graphite);
+  }
+
+  .sample__use {
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    line-height: var(--lh--1);
+  }
+
+  /* Motion */
+  .token-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+    text-align: left;
+  }
+
+  .token-table th,
+  .token-table td {
+    padding: var(--space-3) var(--space-4) var(--space-3) 0;
+    border-bottom: var(--border-hair);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .token-table thead th {
+    color: var(--c-graphite);
+    font-weight: 400;
+  }
+
+  .token-table tbody th {
+    color: var(--c-paper-bright);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .token-table td {
+    color: var(--c-paper);
+  }
+
+  /* Under 720px each row becomes a small stack, so nothing overflows. */
+  @media (max-width: 719.98px) {
+    .token-table thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    .token-table tr {
+      display: grid;
+      padding: var(--space-3) 0;
+      border-bottom: var(--border-hair);
+    }
+
+    .token-table th,
+    .token-table td {
+      padding: 0;
+      border: 0;
+    }
+
+    .token-table td:last-child {
+      color: var(--c-graphite);
+    }
+  }
+
+  .motion-demo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .motion-demo__tile {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    color: var(--c-paper-bright);
+    border: var(--border-hair);
+    border-radius: var(--radius-2);
+    text-decoration: none;
+    transition: border-color var(--dur-base) var(--ease);
+  }
+
+  .motion-demo__tile:hover,
+  .motion-demo__tile:focus-visible {
+    border-color: var(--c-phosphor);
+  }
+
+  .motion-demo__meta {
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+  }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-7) var(--col-gap);
+  }
+
+  @media (min-width: 720px) {
+    .card-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .card-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /* Index notes */
+  .breakpoint-notes {
+    display: grid;
+    gap: var(--space-2);
+    max-width: var(--measure);
+    color: var(--c-graphite);
+    font-size: var(--step--1);
+    line-height: var(--lh--1);
+  }
+
+  .breakpoint-notes li {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .breakpoint-notes__range {
+    color: var(--c-paper);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+  }
+
+  @media (min-width: 720px) {
+    .breakpoint-notes li {
+      grid-template-columns: 16ch minmax(0, 1fr);
+      column-gap: var(--space-4);
+    }
+  }
+
+  .tile-diagrams {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .tile-footer {
+    padding-block: var(--space-7) var(--space-8);
+    border-top: var(--border-hair);
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+  }
+</style>
