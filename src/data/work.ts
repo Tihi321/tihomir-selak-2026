@@ -3,7 +3,9 @@ import type { ProjectEntry } from '../lib/entries';
 /**
  * Pixotope work, text only. Summaries stick to the claims that are safe to
  * publish: no metrics, customer names or internal architecture. Years are
- * start years; `date` only keeps the order inside a year stable.
+ * start years; `date` only keeps the order inside a year stable. A card links
+ * to the blog post with the same slug once that post appears in the blog's RSS
+ * feed (resolved at build time in `src/lib/blogFeed.ts`).
  */
 export const work: readonly ProjectEntry[] = [
   {
