@@ -157,6 +157,15 @@
     }
   };
 
+  const sharedDomain = 'tihomir-selak.from.hr';
+  const storeThemeCookie = (value: 'light' | 'dark') => {
+    const host = location.hostname;
+    const shared = host === sharedDomain || host.endsWith(`.${sharedDomain}`);
+    document.cookie =
+      `ts-theme=${value}; path=/; max-age=31536000; SameSite=Lax` +
+      (shared ? `; domain=.${sharedDomain}; Secure` : '');
+  };
+
   const explicit = () => {
     const value = root.getAttribute('data-theme');
     return value === 'light' || value === 'dark' ? value : null;
@@ -187,6 +196,7 @@
     const next = effective() === 'dark' ? 'light' : 'dark';
     root.setAttribute('data-theme', next);
     store('ts-theme', next);
+    storeThemeCookie(next);
     syncTheme();
   });
 

@@ -59,6 +59,29 @@ test.describe('theme toggle', () => {
   });
 });
 
+test.describe('shared theme cookie', () => {
+  test.use({ colorScheme: 'light' });
+
+  test('wins over localStorage on load and is written on toggle', async ({
+    page,
+    context,
+  }) => {
+    await context.addCookies([
+      { name: 'ts-theme', value: 'dark', url: 'http://127.0.0.1:4321' },
+    ]);
+    await page.addInitScript(() => localStorage.setItem('ts-theme', 'light'));
+    await page.goto('/');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    expect(await background(page)).toBe(dark);
+
+    await page.getByRole('button', { name: 'Switch to light theme' }).click();
+    const cookies = await context.cookies();
+    expect(cookies.find(({ name }) => name === 'ts-theme')?.value).toBe(
+      'light',
+    );
+  });
+});
+
 test.describe('field toggle', () => {
   test('hides the canvas, flips aria-pressed and persists', async ({
     page,
