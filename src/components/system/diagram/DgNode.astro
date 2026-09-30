@@ -1,0 +1,49 @@
+---
+interface Props {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  label: string;
+  sub?: string;
+  kind?: 'service' | 'store' | 'ui' | 'external';
+}
+
+const { x, y, w, h, label, sub, kind = 'service' } = Astro.props;
+
+// Space taken by the top cue: store lid (8) or ui header bar (16).
+const inset = kind === 'store' ? 8 : kind === 'ui' ? 16 : 0;
+
+const cx = x + w / 2;
+const cy = y + inset + (h - inset) / 2;
+const labelY = sub ? cy - 3 : cy + 5;
+const subY = cy + 12;
+---
+
+<g class:list={['dg-node', `dg-node--${kind}`]}>
+  <rect class="dg-node__box" x={x} y={y} width={w} height={h} rx="2"></rect>
+  {inset > 0 && (
+    <line
+      class="dg-node__rule"
+      x1={x}
+      y1={y + inset}
+      x2={x + w}
+      y2={y + inset}
+    />
+  )}
+  {kind === 'ui' && (
+    <>
+      <circle class="dg-node__dot" cx={x + 8} cy={y + 8} r="1.5" />
+      <circle class="dg-node__dot" cx={x + 16} cy={y + 8} r="1.5" />
+      <circle class="dg-node__dot" cx={x + 24} cy={y + 8} r="1.5" />
+    </>
+  )}
+  <text class="dg-node__label" x={cx} y={labelY}>
+    {label}
+  </text>
+  {sub && (
+    <text class="dg-node__sub" x={cx} y={subY}>
+      {sub}
+    </text>
+  )}
+</g>

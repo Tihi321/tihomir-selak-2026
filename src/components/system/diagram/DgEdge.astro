@@ -1,0 +1,70 @@
+---
+interface Props {
+  /** Polyline vertices. Snap to 8 units and end exactly on node borders. */
+  points: [number, number][];
+  label?: string;
+  /** Label anchor. Defaults to the midpoint of the longest segment, nudged off the line. */
+  labelAt?: [number, number];
+  /** Solid is request/response, dashed is async/broadcast. */
+  style?: 'solid' | 'dashed';
+  /** The path the figure is explaining. Drawn in the accent color. */
+  primary?: boolean;
+  /** Must equal the DiagramFrame id. */
+  markerPrefix: string;
+  bidirectional?: boolean;
+}
+
+const {
+  points,
+  label,
+  labelAt,
+  style = 'solid',
+  primary = false,
+  markerPrefix,
+  bidirectional = false,
+} = Astro.props;
+
+const marker = `url(#${markerPrefix}-arrow${primary ? '-primary' : ''})`;
+
+// Longest segment decides where the label goes and how it is anchored.
+let best: { a: [number, number]; b: [number, number]; len: number } | undefined;
+for (let i = 0; i < points.length - 1; i += 1) {
+  const a = points[i];
+  const b = points[i + 1];
+  if (!a || !b) continue;
+  const len = Math.abs(b[0] - a[0]) + Math.abs(b[1] - a[1]);
+  if (!best || len > best.len) best = { a, b, len };
+}
+
+const vertical = best
+  ? Math.abs(best.b[1] - best.a[1]) > Math.abs(best.b[0] - best.a[0])
+  : false;
+const mid: [number, number] = best
+  ? [(best.a[0] + best.b[0]) / 2, (best.a[1] + best.b[1]) / 2]
+  : [0, 0];
+
+// Horizontal runs: label centered above the line. Vertical runs: label to the right.
+const [lx, ly] =
+  labelAt ?? (vertical ? [mid[0] + 10, mid[1] + 4] : [mid[0], mid[1] - 8]);
+const anchor = vertical ? 'start' : 'middle';
+---
+
+<g
+  class:list={[
+    'dg-edge',
+    style === 'dashed' && 'dg-edge--dashed',
+    primary && 'dg-edge--primary',
+  ]}
+>
+  <polyline
+    class="dg-edge__line"
+    points={points.map(([px, py]) => `${px},${py}`).join(' ')}
+    marker-end={marker}
+    marker-start={bidirectional ? marker : undefined}
+  ></polyline>
+  {label && (
+    <text class="dg-edge__label" x={lx} y={ly} text-anchor={anchor}>
+      {label}
+    </text>
+  )}
+</g>

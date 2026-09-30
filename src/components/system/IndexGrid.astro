@@ -1,0 +1,132 @@
+---
+import {
+  groupIndex,
+  type IndexEntry,
+  type ProjectEntry,
+} from '../../lib/entries';
+import ProjectCard from './ProjectCard.astro';
+import WritingList from './WritingList.astro';
+
+interface Props {
+  entries: readonly IndexEntry[];
+}
+
+const groups = groupIndex(Astro.props.entries);
+
+/**
+ * A project run with a single card would leave half the row empty, so it
+ * spans the full width: horizontal feature layout with a preview, wide
+ * compact layout without one. Flagged feature cards always span the row.
+ */
+const layoutFor = (entry: ProjectEntry, runLength: number) => {
+  if (runLength === 1 || entry.feature) {
+    return entry.preview ? 'feature' : 'wide';
+  }
+  return 'stack';
+};
+---
+
+<div class="index-grid">
+  {groups.map((group) => (
+    <section class="index-year" aria-labelledby={`year-${group.year}`}>
+      <h3 class="index-year__label" id={`year-${group.year}`}>
+        {group.year}
+      </h3>
+      <div class="index-year__runs">
+        {group.runs.map((run) =>
+          run.kind === 'projects' ? (
+            <div class="index-run index-run--projects">
+              {run.items.map((entry) => (
+                <ProjectCard
+                  entry={entry}
+                  level={4}
+                  layout={layoutFor(entry, run.items.length)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div class="index-run index-run--writing">
+              <WritingList
+                entries={run.items}
+                label={`Writing in ${group.year}`}
+              />
+            </div>
+          ),
+        )}
+      </div>
+    </section>
+  ))}
+</div>
+
+<style>
+  .index-grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .index-year {
+    display: grid;
+    align-items: start;
+    row-gap: var(--space-5);
+  }
+
+  .index-year__label {
+    max-width: none;
+    color: var(--c-paper-bright);
+    font-family: var(--font-mono);
+    font-size: var(--step-1);
+    font-stretch: 100%;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: var(--lh-1);
+  }
+
+  .index-year__runs {
+    display: grid;
+    gap: var(--space-7);
+    min-width: 0;
+  }
+
+  .index-run--projects {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--space-7) var(--col-gap);
+  }
+
+  /* Under 720px: one column, sticky year heading on carbon. */
+  @media (max-width: 719.98px) {
+    .index-year__label {
+      position: sticky;
+      z-index: 2;
+      top: 0;
+      padding: var(--space-3) 0;
+      background: var(--c-carbon);
+      border-bottom: var(--border-hair);
+    }
+
+    .index-run--projects {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* 1024px and up: year in a 2-column margin, content in 10. */
+  @media (min-width: 1024px) {
+    .index-year {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+    }
+
+    .index-year__label {
+      position: sticky;
+      top: var(--space-5);
+      grid-column: 1 / span 2;
+      padding-top: var(--space-4);
+    }
+
+    .index-year__runs {
+      grid-column: 3 / span 10;
+    }
+  }
+</style>

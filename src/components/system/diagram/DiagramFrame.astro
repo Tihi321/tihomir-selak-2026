@@ -1,0 +1,100 @@
+---
+import './diagram.css';
+
+interface Props {
+  /** Prefix for the title, description, marker and grid ids. */
+  id: string;
+  title: string;
+  description: string;
+  /** Short figure label, e.g. "Fig. 1". */
+  caption: string;
+  captionText: string;
+  /** SVG viewBox, e.g. "0 0 864 360". Coordinates snap to 8 units. */
+  viewBox: string;
+  /** Below this width the frame scrolls horizontally instead of shrinking. */
+  minWidth?: number;
+}
+
+const {
+  id,
+  title,
+  description,
+  caption,
+  captionText,
+  viewBox,
+  minWidth = 640,
+} = Astro.props;
+
+const [vx = 0, vy = 0, vw = 0, vh = 0] = viewBox.split(/\s+/).map(Number);
+---
+
+<figure class="dg">
+  <div
+    class="dg__scroll"
+    role="region"
+    aria-label={`${caption}, scrollable diagram`}
+    tabindex="0"
+  >
+    <svg
+      class="dg__svg"
+      viewBox={viewBox}
+      role="img"
+      aria-labelledby={`${id}-title ${id}-desc`}
+      style={`min-width: ${minWidth}px`}
+    >
+      <title id={`${id}-title`}>{title}</title>
+      <desc id={`${id}-desc`}>{description}</desc>
+      <defs>
+        <marker
+          id={`${id}-arrow`}
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="10"
+          markerHeight="10"
+          markerUnits="userSpaceOnUse"
+          orient="auto-start-reverse"
+        >
+          <path class="dg-marker" d="M2 1.5 L8.5 5 L2 8.5"></path>
+        </marker>
+        <marker
+          id={`${id}-arrow-primary`}
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="10"
+          markerHeight="10"
+          markerUnits="userSpaceOnUse"
+          orient="auto-start-reverse"
+        >
+          <path
+            class="dg-marker dg-marker--primary"
+            d="M2 1.5 L8.5 5 L2 8.5"
+          ></path>
+        </marker>
+        <pattern
+          id={`${id}-grid`}
+          x="-1"
+          y="-1"
+          width="16"
+          height="16"
+          patternUnits="userSpaceOnUse"
+        >
+          <circle class="dg-dot" cx="1" cy="1" r="0.75"></circle>
+        </pattern>
+      </defs>
+      <rect
+        x={vx}
+        y={vy}
+        width={vw}
+        height={vh}
+        fill={`url(#${id}-grid)`}
+      ></rect>
+      <slot />
+    </svg>
+  </div>
+  <figcaption class="dg__caption">
+    <span class="dg__fig">{caption}</span>
+    <span class="dg__text">{captionText}</span>
+  </figcaption>
+</figure>

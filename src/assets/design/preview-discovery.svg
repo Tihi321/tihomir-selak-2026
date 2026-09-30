@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <title>Simplified still of a discovery diagram with two machines, boxes and one accent dashed link</title>
+  <defs>
+    <pattern id="grid" x="-2" y="-2" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.5" fill="#272D33"/>
+    </pattern>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="18" markerHeight="18" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+      <path d="M2 1.5 L8.5 5 L2 8.5" fill="none" stroke="#8E969E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="18" markerHeight="18" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+      <path d="M2 1.5 L8.5 5 L2 8.5" fill="none" stroke="#E0A458" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="900" fill="#0F1215"/>
+  <rect width="1600" height="900" fill="url(#grid)"/>
+  <g transform="translate(24 138) scale(1.75)">
+    <g fill="none" stroke="#3A424A" stroke-width="2" stroke-dasharray="7 7">
+      <rect x="24" y="32" width="520" height="296"/>
+      <rect x="664" y="32" width="208" height="296"/>
+    </g>
+    <g font-family="Martian Mono, ui-monospace, monospace" font-size="15" fill="#8E969E">
+      <text x="40" y="56">host-a</text>
+      <text x="680" y="56">host-b</text>
+    </g>
+    <g fill="#171B1F" stroke="#3A424A" stroke-width="2">
+      <rect x="48" y="96" width="160" height="64" rx="2"/>
+      <rect x="360" y="96" width="160" height="64" rx="2"/>
+      <rect x="360" y="232" width="160" height="64" rx="2"/>
+      <rect x="688" y="96" width="160" height="64" rx="2"/>
+      <line x1="48" y1="112" x2="208" y2="112" fill="none"/>
+      <line x1="360" y1="240" x2="520" y2="240" fill="none"/>
+    </g>
+    <rect x="688" y="232" width="160" height="64" rx="2" fill="none" stroke="#3A424A" stroke-width="2" stroke-dasharray="7 7"/>
+    <g font-family="Archivo, Arial, sans-serif" font-size="18" font-weight="500" fill="#E8E4DA" text-anchor="middle">
+      <text x="128" y="139">Control UI</text>
+      <text x="440" y="134">Daemon</text>
+      <text x="440" y="272">State store</text>
+      <text x="768" y="134">Daemon</text>
+      <text x="768" y="270">Render engine</text>
+    </g>
+    <g fill="none" stroke="#8E969E" stroke-width="2.4" stroke-linejoin="round">
+      <polyline points="208,128 360,128" marker-start="url(#a)" marker-end="url(#a)"/>
+      <polyline points="440,160 440,232" marker-end="url(#a)"/>
+      <polyline points="768,160 768,232" marker-end="url(#a)"/>
+    </g>
+    <polyline points="520,128 688,128" fill="none" stroke="#E0A458" stroke-width="2.8" stroke-dasharray="10 7" marker-start="url(#p)" marker-end="url(#p)"/>
+    <text x="604" y="116" text-anchor="middle" font-family="Martian Mono, ui-monospace, monospace" font-size="16" fill="#E0A458" stroke="#0F1215" stroke-width="5" stroke-linejoin="round" paint-order="stroke">udp</text>
+  </g>
+</svg>

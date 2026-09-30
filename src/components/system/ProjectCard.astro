@@ -1,0 +1,224 @@
+---
+import type { ProjectEntry } from '../../lib/entries';
+import TagList from './TagList.astro';
+import TypeBadge from './TypeBadge.astro';
+
+interface Props {
+  entry: ProjectEntry;
+  /** Heading level of the title, so cards nest under section headings. */
+  level?: 3 | 4;
+  /**
+   * stack: vertical card that shares a row (default).
+   * feature: full-width; preview left and text right from 1024px.
+   * wide: full-width, no preview; head left and detail right from 720px.
+   * Defaults to feature when the entry is flagged `feature`, otherwise stack.
+   */
+  layout?: 'stack' | 'feature' | 'wide';
+}
+
+const {
+  entry,
+  level = 3,
+  layout = entry.feature ? 'feature' : 'stack',
+} = Astro.props;
+const Heading = `h${level}` as const;
+const captions = {
+  screenshot: 'Screenshot',
+  diagram: 'Diagram',
+  demo: 'Live demo still',
+} as const;
+const preview = entry.preview;
+---
+
+<article
+  class="project-card"
+  id={`entry-${entry.slug}`}
+  data-layout={layout}
+  data-has-preview={preview ? '' : undefined}
+>
+  {preview && (
+    <figure class="project-card__media">
+      <div class="project-card__frame">
+        <img
+          src={preview.src}
+          width={preview.width}
+          height={preview.height}
+          alt={preview.alt}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <figcaption class="project-card__caption">
+        {captions[preview.kind]}
+      </figcaption>
+    </figure>
+  )}
+  <div class="project-card__body">
+    <div class="project-card__head">
+      <p class="project-card__meta">
+        <TypeBadge type={entry.type} />
+        <time class="project-card__year" datetime={String(entry.year)}>
+          {entry.year}
+        </time>
+      </p>
+      <Heading class="project-card__title">
+        <a class="project-card__link" href={entry.href}>
+          {entry.title}
+        </a>
+      </Heading>
+    </div>
+    <div class="project-card__detail">
+      <p class="project-card__summary">{entry.summary}</p>
+      <TagList tags={entry.tags} label={`${entry.title} tags`} />
+    </div>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    padding-top: var(--space-4);
+    border-top: var(--border-hair);
+  }
+
+  .project-card[data-layout='feature'],
+  .project-card[data-layout='wide'] {
+    grid-column: 1 / -1;
+  }
+
+  .project-card__media {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .project-card__frame {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--c-slate);
+    border: var(--border-hair);
+    border-radius: var(--radius-2);
+    transition: border-color var(--dur-base) var(--ease);
+  }
+
+  .project-card__frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project-card__caption {
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+  }
+
+  .project-card__body {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .project-card__meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .project-card__year {
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-variant-numeric: tabular-nums;
+    line-height: var(--lh--2);
+  }
+
+  .project-card__title {
+    max-width: none;
+    font-size: var(--step-1);
+    line-height: var(--lh-1);
+    letter-spacing: -0.015em;
+  }
+
+  .project-card__link {
+    color: var(--c-paper-bright);
+    text-decoration: none;
+  }
+
+  /* The stretched overlay makes the whole card the hit area. */
+  .project-card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .project-card__link:focus-visible {
+    outline: none;
+  }
+
+  .project-card__link:focus-visible::after {
+    outline: 2px solid var(--c-phosphor);
+    outline-offset: 3px;
+  }
+
+  .project-card:hover .project-card__link,
+  .project-card:focus-within .project-card__link {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+
+  .project-card:hover .project-card__frame,
+  .project-card:focus-within .project-card__frame {
+    border-color: var(--c-phosphor);
+  }
+
+  .project-card__summary {
+    max-width: 52ch;
+    color: var(--c-graphite);
+    font-size: var(--step--1);
+    line-height: var(--lh--1);
+  }
+
+  .project-card__head,
+  .project-card__detail {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .project-card__detail :global(.tag-list) {
+    margin-top: var(--space-2);
+  }
+
+  /* Wide compact: head on the left half, detail on the right half. */
+  @media (min-width: 720px) {
+    .project-card[data-layout='wide'] .project-card__body {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .project-card[data-layout='feature'][data-has-preview] {
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+    }
+
+    .project-card[data-layout='feature'][data-has-preview]
+      .project-card__media {
+      grid-column: 1 / span 7;
+    }
+
+    .project-card[data-layout='feature'][data-has-preview] .project-card__body {
+      grid-column: 8 / span 3;
+    }
+  }
+</style>
