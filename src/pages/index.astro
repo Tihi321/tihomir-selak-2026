@@ -8,8 +8,10 @@ import SiteHeader from '../components/system/SiteHeader.astro';
 import { experience } from '../data/experience';
 import { site } from '../data/site';
 import { work } from '../data/work';
-import { writing } from '../data/writing';
 import SystemLayout from '../layouts/SystemLayout.astro';
+import { fetchPublishedSlugs, linkWork } from '../lib/blogFeed';
+
+const cards = linkWork(work, await fetchPublishedSlugs(site.blog), site.blog);
 
 const steps = [
   'Clarify the operational problem and constraints.',
@@ -66,15 +68,13 @@ const steps = [
     </section>
 
     <div class="wrap">
-      <Section id="work" label="Work and writing">
-        <p class="note">
-          Work at Pixotope since 2020, with writing from the blog.
-        </p>
+      <Section id="work" label="Work">
+        <p class="note">Work at Pixotope since 2020.</p>
         <Fragment slot="wide">
-          <IndexGrid entries={[...work, ...writing]} />
+          <IndexGrid entries={cards} />
           <div class="more grid-12">
             <p class="more__link">
-              <a href={`${site.blog}/writing/`}>All writing on the blog</a>
+              <a href={`${site.blog}/writing/`}>Writing lives on the blog</a>
             </p>
           </div>
         </Fragment>

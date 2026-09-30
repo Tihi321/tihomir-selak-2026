@@ -21,24 +21,28 @@ test('shows one clear headline and the expected landmarks', async ({
   await expect(page.locator('#contact')).toBeAttached();
 });
 
-test('lists six unlinked work cards and seven blog writing rows', async ({
+test('lists six work cards, links only to blog posts, and no writing rows', async ({
   page,
 }) => {
   await page.goto('/');
 
   const cards = page.locator('.project-card');
   await expect(cards).toHaveCount(6);
-  await expect(cards.locator('a')).toHaveCount(0);
-
-  const rows = page.locator('.writing-item');
-  await expect(rows).toHaveCount(7);
-  for (const row of await rows.all()) {
-    await expect(row.locator('time[datetime]')).toHaveCount(1);
-    await expect(row.locator('a')).toHaveAttribute(
-      'href',
-      /^https:\/\/blog\.tihomir-selak\.from\.hr\/writing\//,
+  const hrefs = await cards
+    .locator('a')
+    .evaluateAll((links) => links.map((a) => a.getAttribute('href') ?? ''));
+  for (const href of hrefs) {
+    expect(href).toMatch(
+      /^https:\/\/blog\.tihomir-selak\.from\.hr\/writing\/[a-z0-9-]+\/$/,
     );
   }
+
+  await expect(page.locator('.writing-item')).toHaveCount(0);
+  await expect(
+    page
+      .getByRole('main')
+      .locator('a[href="https://blog.tihomir-selak.from.hr/writing/"]'),
+  ).toHaveCount(1);
 });
 
 test('header routes land on their sections from home and not found', async ({
