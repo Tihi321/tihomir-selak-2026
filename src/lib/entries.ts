@@ -8,8 +8,7 @@ export type ProjectType = 'work' | 'side' | 'interactive';
 
 export type PreviewKind = 'screenshot' | 'diagram' | 'demo';
 
-export type WritingTopic =
-  'Engineering' | 'Physics' | 'Futurism' | 'Science' | 'Notes';
+export type WritingTopic = string;
 
 export interface ImagePreview {
   kind: PreviewKind;
@@ -36,7 +35,7 @@ export interface ProjectEntry {
    */
   date?: string;
   tags: readonly string[];
-  href: string;
+  href?: string;
   preview?: ImagePreview;
   feature?: boolean;
 }

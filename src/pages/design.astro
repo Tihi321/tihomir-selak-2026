@@ -3,6 +3,7 @@ import DgLegend from '../components/system/diagram/DgLegend.astro';
 import DiscoverySketch from '../components/system/diagrams/DiscoverySketch.astro';
 import IndexGrid from '../components/system/IndexGrid.astro';
 import ProjectCard from '../components/system/ProjectCard.astro';
+import Section from '../components/system/Section.astro';
 import WritingList from '../components/system/WritingList.astro';
 import { cardVariants, indexEntries, writingRows } from '../data/designSamples';
 import SystemLayout from '../layouts/SystemLayout.astro';
@@ -205,265 +206,226 @@ fn announce(name: &str) -> std::io::Result<()> {
     </div>
 
     <div class="wrap">
-      <section class="tile-section grid-12" aria-labelledby="color">
-        <h2 class="tile-section__label" id="color">
-          Color
-        </h2>
-        <div class="tile-section__body">
-          <p class="tile-note">
-            Dark only. Phosphor is the single accent, and it only marks what you
-            can interact with or the path a diagram is explaining. Contrast is
-            measured against carbon.
-          </p>
-          <ul class="swatches">
-            {swatches.map((swatch) => (
-              <li class="swatch">
-                <span
-                  class="swatch__chip"
-                  style={`background: ${swatch.fill}`}
-                  aria-hidden="true"
-                />
-                <span class="swatch__name">{swatch.name}</span>
-                <span class="swatch__hex">{swatch.hex}</span>
-                <span class="swatch__role">{swatch.role}</span>
-                <span class="swatch__ratio">{swatch.contrast}:1</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <Section id="color" label="Color">
+        <p class="tile-note">
+          Dark only. Phosphor is the single accent, and it only marks what you
+          can interact with or the path a diagram is explaining. Contrast is
+          measured against carbon.
+        </p>
+        <ul class="swatches">
+          {swatches.map((swatch) => (
+            <li class="swatch">
+              <span
+                class="swatch__chip"
+                style={`background: ${swatch.fill}`}
+                aria-hidden="true"
+              />
+              <span class="swatch__name">{swatch.name}</span>
+              <span class="swatch__hex">{swatch.hex}</span>
+              <span class="swatch__role">{swatch.role}</span>
+              <span class="swatch__ratio">{swatch.contrast}:1</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
 
-      <section class="tile-section grid-12" aria-labelledby="type">
-        <h2 class="tile-section__label" id="type">
-          Type
-        </h2>
-        <div class="tile-section__body">
-          <p class="tile-note">
-            Archivo for reading and headings, Martian Mono for anything that is
-            data. Headings are weight 600 and tightly tracked. Mono is always
-            set a step smaller because it runs wide.
-          </p>
-          <h3 class="tile-sub">Scale</h3>
-          <ul class="type-scale">
-            {steps.map((step) => (
-              <li class="type-step">
-                <span class="type-step__spec">
-                  <span>{step.token}</span>
-                  <span>
-                    {step.px}px / {step.lh}
-                  </span>
+      <Section id="type" label="Type">
+        <p class="tile-note">
+          Archivo for reading and headings, Martian Mono for anything that is
+          data. Headings are weight 600 and tightly tracked. Mono is always set
+          a step smaller because it runs wide.
+        </p>
+        <h3 class="tile-sub">Scale</h3>
+        <ul class="type-scale">
+          {steps.map((step) => (
+            <li class="type-step">
+              <span class="type-step__spec">
+                <span>{step.token}</span>
+                <span>
+                  {step.px}px / {step.lh}
                 </span>
-                <span
-                  class:list={['type-step__sample', `is-${step.family}`]}
-                  style={`font-size: var(${step.token}); line-height: var(${lhVar(step.token)})`}
-                >
-                  {step.family === 'mono'
-                    ? 'zmq://host-a:5555'
-                    : 'Signals between machines'}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <h3 class="tile-sub">Prose at the measure</h3>
-          <div class="prose">
-            <p>
-              Two clocks in the same room never quite agree. Nudge one of them
-              toward the ceiling and the disagreement grows, by an amount too
-              small to notice on any single day and large enough that a
-              satellite navigation system has to correct for it. The lesson is
-              less about clocks than about the word "now", which turns out to
-              need an address as well as a time.
-            </p>
-            <p>
-              Engineers who build live systems learn the same thing without the
-              relativity: every machine has its own idea of the present, and the
-              useful question is how far apart those ideas are allowed to drift.
-              This paragraph is placeholder text set at 66 characters per line.
-            </p>
-          </div>
-          <h3 class="tile-sub">Code</h3>
-          <pre
-            tabindex="0"
-            role="region"
-            aria-label="Rust code sample"
-          ><code class="language-rust" set:text={rustSample} /></pre>
-        </div>
-      </section>
-
-      <section class="tile-section grid-12" aria-labelledby="space">
-        <h2 class="tile-section__label" id="space">
-          Space, radii, borders
-        </h2>
-        <div class="tile-section__body">
-          <h3 class="tile-sub">Space, 4px base</h3>
-          <ul class="ruler">
-            {spaces.map((space) => (
-              <li class="ruler__row">
-                <span class="ruler__token">{space.token}</span>
-                <span class="ruler__px">{space.px}px</span>
-                <span
-                  class="ruler__bar"
-                  style={`width: var(${space.token})`}
-                  aria-hidden="true"
-                />
-              </li>
-            ))}
-          </ul>
-          <h3 class="tile-sub">Radii</h3>
-          <ul class="samples">
-            {radii.map((radius) => (
-              <li class="sample">
-                <span
-                  class="sample__box"
-                  style={`border-radius: var(${radius.token})`}
-                  aria-hidden="true"
-                />
-                <span class="sample__token">{radius.token}</span>
-                <span class="sample__value">{radius.value}</span>
-                <span class="sample__use">{radius.use}</span>
-              </li>
-            ))}
-          </ul>
-          <h3 class="tile-sub">Borders</h3>
-          <ul class="samples">
-            {borders.map((border) => (
-              <li class="sample">
-                <span
-                  class="sample__box sample__box--border"
-                  style={`border: var(${border.token})`}
-                  aria-hidden="true"
-                />
-                <span class="sample__token">{border.token}</span>
-                <span class="sample__value">{border.value}</span>
-                <span class="sample__use">{border.use}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section class="tile-section grid-12" aria-labelledby="motion">
-        <h2 class="tile-section__label" id="motion">
-          Motion
-        </h2>
-        <div class="tile-section__body">
-          <p class="tile-note">
-            Motion only answers what the reader does: color, border and
-            underline changes on hover and focus. There are no entrance
-            animations and no scroll effects. Reduced motion sets durations to
-            zero.
+              </span>
+              <span
+                class:list={['type-step__sample', `is-${step.family}`]}
+                style={`font-size: var(${step.token}); line-height: var(${lhVar(step.token)})`}
+              >
+                {step.family === 'mono'
+                  ? 'zmq://host-a:5555'
+                  : 'Signals between machines'}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <h3 class="tile-sub">Prose at the measure</h3>
+        <div class="prose">
+          <p>
+            Two clocks in the same room never quite agree. Nudge one of them
+            toward the ceiling and the disagreement grows, by an amount too
+            small to notice on any single day and large enough that a satellite
+            navigation system has to correct for it. The lesson is less about
+            clocks than about the word "now", which turns out to need an address
+            as well as a time.
           </p>
-          <table class="token-table">
-            <thead>
+          <p>
+            Engineers who build live systems learn the same thing without the
+            relativity: every machine has its own idea of the present, and the
+            useful question is how far apart those ideas are allowed to drift.
+            This paragraph is placeholder text set at 66 characters per line.
+          </p>
+        </div>
+        <h3 class="tile-sub">Code</h3>
+        <pre
+          tabindex="0"
+          role="region"
+          aria-label="Rust code sample"
+        ><code class="language-rust" set:text={rustSample} /></pre>
+      </Section>
+
+      <Section id="space" label="Space, radii, borders">
+        <h3 class="tile-sub">Space, 4px base</h3>
+        <ul class="ruler">
+          {spaces.map((space) => (
+            <li class="ruler__row">
+              <span class="ruler__token">{space.token}</span>
+              <span class="ruler__px">{space.px}px</span>
+              <span
+                class="ruler__bar"
+                style={`width: var(${space.token})`}
+                aria-hidden="true"
+              />
+            </li>
+          ))}
+        </ul>
+        <h3 class="tile-sub">Radii</h3>
+        <ul class="samples">
+          {radii.map((radius) => (
+            <li class="sample">
+              <span
+                class="sample__box"
+                style={`border-radius: var(${radius.token})`}
+                aria-hidden="true"
+              />
+              <span class="sample__token">{radius.token}</span>
+              <span class="sample__value">{radius.value}</span>
+              <span class="sample__use">{radius.use}</span>
+            </li>
+          ))}
+        </ul>
+        <h3 class="tile-sub">Borders</h3>
+        <ul class="samples">
+          {borders.map((border) => (
+            <li class="sample">
+              <span
+                class="sample__box sample__box--border"
+                style={`border: var(${border.token})`}
+                aria-hidden="true"
+              />
+              <span class="sample__token">{border.token}</span>
+              <span class="sample__value">{border.value}</span>
+              <span class="sample__use">{border.use}</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section id="motion" label="Motion">
+        <p class="tile-note">
+          Motion only answers what the reader does: color, border and underline
+          changes on hover and focus. There are no entrance animations and no
+          scroll effects. Reduced motion sets durations to zero.
+        </p>
+        <table class="token-table">
+          <thead>
+            <tr>
+              <th scope="col">Token</th>
+              <th scope="col">Value</th>
+              <th scope="col">Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            {motion.map((row) => (
               <tr>
-                <th scope="col">Token</th>
-                <th scope="col">Value</th>
-                <th scope="col">Use</th>
+                <th scope="row">{row.token}</th>
+                <td>{row.value}</td>
+                <td>{row.use}</td>
               </tr>
-            </thead>
-            <tbody>
-              {motion.map((row) => (
-                <tr>
-                  <th scope="row">{row.token}</th>
-                  <td>{row.value}</td>
-                  <td>{row.use}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div class="motion-demo">
-            <a class="motion-demo__link" href="#motion">
-              Hover or focus this link
-            </a>
-            <a class="motion-demo__tile" href="#motion">
-              <span>Hover or focus this tile</span>
-              <span class="motion-demo__meta">border, 180ms</span>
-            </a>
-          </div>
+            ))}
+          </tbody>
+        </table>
+        <div class="motion-demo">
+          <a class="motion-demo__link" href="#motion">
+            Hover or focus this link
+          </a>
+          <a class="motion-demo__tile" href="#motion">
+            <span>Hover or focus this tile</span>
+            <span class="motion-demo__meta">border, 180ms</span>
+          </a>
         </div>
-      </section>
+      </Section>
 
-      <section class="tile-section grid-12" aria-labelledby="project-card">
-        <h2 class="tile-section__label" id="project-card">
-          Project card
-        </h2>
-        <div class="tile-section__body">
-          <p class="tile-note">
-            Four variants: a feature card with a demo still, a diagram preview,
-            a screenshot preview, and a compact card with no preview. The whole
-            card is one link, and hovering or focusing it highlights the frame.
-          </p>
-          <div class="card-grid">
-            {[
-              cardVariants[3],
-              cardVariants[0],
-              cardVariants[1],
-              cardVariants[2],
-            ].map((entry) => entry && <ProjectCard entry={entry} level={3} />)}
-          </div>
+      <Section id="project-card" label="Project card">
+        <p class="tile-note">
+          Four variants: a feature card with a demo still, a diagram preview, a
+          screenshot preview, and a compact card with no preview. The whole card
+          is one link, and hovering or focusing it highlights the frame.
+        </p>
+        <div class="card-grid">
+          {[
+            cardVariants[3],
+            cardVariants[0],
+            cardVariants[1],
+            cardVariants[2],
+          ].map((entry) => entry && <ProjectCard entry={entry} level={3} />)}
         </div>
-      </section>
+      </Section>
 
-      <section class="tile-section grid-12" aria-labelledby="writing-list">
-        <h2 class="tile-section__label" id="writing-list">
-          Writing list
-        </h2>
-        <div class="tile-section__body">
-          <p class="tile-note">
-            Text only. Date, title, topic and reading time sit in aligned
-            columns, and stack on narrow screens. The last title is a real one
-            from the old site; the rest are placeholders.
-          </p>
-          <WritingList entries={writingRows} label="Sample writing" />
-        </div>
-      </section>
+      <Section id="writing-list" label="Writing list">
+        <p class="tile-note">
+          Text only. Date, title, topic and reading time sit in aligned columns,
+          and stack on narrow screens. The last title is a real one from the old
+          site; the rest are placeholders.
+        </p>
+        <WritingList entries={writingRows} label="Sample writing" />
+      </Section>
 
-      <section class="tile-section grid-12" aria-labelledby="index">
-        <h2 class="tile-section__label" id="index">
-          Index
-        </h2>
-        <div class="tile-section__body">
-          <p class="tile-note">
-            Entries are grouped by year, newest first. Consecutive projects form
-            a 2-up run. A feature card, or a project that is alone in its run,
-            spans the full width: horizontal with a preview, wide and compact
-            without one. Consecutive writing entries share one ledger block.
-          </p>
-          <ul class="breakpoint-notes">
-            <li>
-              <span class="breakpoint-notes__range">1024px and up</span>
-              <span>
-                The year sits in a sticky 2-column margin and entries use the
-                other 10.
-              </span>
-            </li>
-            <li>
-              <span class="breakpoint-notes__range">720px to 1023px</span>
-              <span>
-                The margin becomes a heading row above each year. Project runs
-                stay 2-up, feature cards go vertical, and wide cards keep two
-                halves.
-              </span>
-            </li>
-            <li>
-              <span class="breakpoint-notes__range">Under 720px</span>
-              <span>
-                One column. The year heading sticks to the top on a carbon
-                background, and writing rows stack.
-              </span>
-            </li>
-          </ul>
-        </div>
-        <div class="tile-section__wide">
+      <Section id="index" label="Index">
+        <p class="tile-note">
+          Entries are grouped by year, newest first. Consecutive projects form a
+          2-up run. A feature card, or a project that is alone in its run, spans
+          the full width: horizontal with a preview, wide and compact without
+          one. Consecutive writing entries share one ledger block.
+        </p>
+        <ul class="breakpoint-notes">
+          <li>
+            <span class="breakpoint-notes__range">1024px and up</span>
+            <span>
+              The year sits in a sticky 2-column margin and entries use the
+              other 10.
+            </span>
+          </li>
+          <li>
+            <span class="breakpoint-notes__range">720px to 1023px</span>
+            <span>
+              The margin becomes a heading row above each year. Project runs
+              stay 2-up, feature cards go vertical, and wide cards keep two
+              halves.
+            </span>
+          </li>
+          <li>
+            <span class="breakpoint-notes__range">Under 720px</span>
+            <span>
+              One column. The year heading sticks to the top on a carbon
+              background, and writing rows stack.
+            </span>
+          </li>
+        </ul>
+        <Fragment slot="wide">
           <IndexGrid entries={indexEntries} />
-        </div>
-      </section>
+        </Fragment>
+      </Section>
 
-      <section class="tile-section grid-12" aria-labelledby="diagrams">
-        <h2 class="tile-section__label" id="diagrams">
-          Diagrams
-        </h2>
-        <div class="tile-section__body tile-diagrams">
+      <Section id="diagrams" label="Diagrams">
+        <div class="tile-diagrams">
           <p class="tile-note">
             The diagram is the one bold element. Solid edges are request and
             response, dashed edges are async or broadcast, and the phosphor edge
@@ -473,7 +435,7 @@ fn announce(name: &str) -> std::io::Result<()> {
           <DgLegend />
           <DiscoverySketch />
         </div>
-      </section>
+      </Section>
     </div>
   </main>
 
@@ -524,44 +486,6 @@ fn announce(name: &str) -> std::io::Result<()> {
     max-width: var(--measure);
     font-size: var(--step-1);
     line-height: var(--lh-1);
-  }
-
-  .tile-section {
-    padding-block: var(--space-7);
-    border-top: var(--border-hair);
-    row-gap: var(--space-5);
-  }
-
-  .tile-section__label {
-    max-width: none;
-    grid-column: 1 / -1;
-    font-size: var(--step-1);
-    line-height: var(--lh-1);
-    letter-spacing: -0.015em;
-  }
-
-  .tile-section__body {
-    display: grid;
-    gap: var(--space-5);
-    grid-column: 1 / -1;
-    min-width: 0;
-    align-content: start;
-  }
-
-  @media (min-width: 1024px) {
-    .tile-section__label {
-      grid-column: 1 / span 2;
-    }
-
-    .tile-section__body {
-      grid-column: 3 / span 10;
-    }
-  }
-
-  /* Breaks out of the content column so the index uses the page grid. */
-  .tile-section__wide {
-    grid-column: 1 / -1;
-    min-width: 0;
   }
 
   .tile-note {
@@ -886,6 +810,7 @@ fn announce(name: &str) -> std::io::Result<()> {
   }
 
   .tile-diagrams {
+    display: grid;
     gap: var(--space-6);
   }
 

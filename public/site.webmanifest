@@ -3,8 +3,8 @@
   "short_name": "Tihomir Selak",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f3f7f8",
-  "theme_color": "#f3f7f8",
+  "background_color": "#0F1215",
+  "theme_color": "#0F1215",
   "icons": [
     {
       "src": "/favicon.svg",

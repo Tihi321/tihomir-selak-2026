@@ -13,6 +13,14 @@ interface Props {
 
 const groups = groupIndex(Astro.props.entries);
 
+/** One project type across the whole index makes the badge redundant. */
+const projectTypes = new Set(
+  Astro.props.entries.flatMap((entry) =>
+    entry.kind === 'project' ? [entry.type] : [],
+  ),
+);
+const showType = projectTypes.size > 1;
+
 /**
  * A project run with a single card would leave half the row empty, so it
  * spans the full width: horizontal feature layout with a preview, wide
@@ -40,6 +48,7 @@ const layoutFor = (entry: ProjectEntry, runLength: number) => {
                 <ProjectCard
                   entry={entry}
                   level={4}
+                  showType={showType}
                   layout={layoutFor(entry, run.items.length)}
                 />
               ))}

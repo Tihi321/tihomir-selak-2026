@@ -1,0 +1,81 @@
+---
+interface Item {
+  readonly period: string;
+  readonly employer: string;
+  readonly role: string;
+  readonly description: string;
+}
+
+interface Props {
+  items: readonly Item[];
+}
+
+const { items } = Astro.props;
+---
+
+<ol class="experience-list">
+  {items.map((item) => (
+    <li class="experience-row">
+      <p class="experience-row__period">{item.period}</p>
+      <div class="experience-row__who">
+        <h3 class="experience-row__role">{item.role}</h3>
+        <p class="experience-row__employer">{item.employer}</p>
+      </div>
+      <p class="experience-row__description">{item.description}</p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .experience-list {
+    border-top: var(--border-hair);
+  }
+
+  .experience-row {
+    display: grid;
+    grid-template-columns: 19ch minmax(0, 1fr) minmax(0, 1.25fr);
+    column-gap: var(--space-5);
+    align-items: baseline;
+    padding: var(--space-4) 0;
+    border-bottom: var(--border-hair);
+  }
+
+  .experience-row__period {
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: var(--lh--2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .experience-row__who {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .experience-row__role {
+    max-width: none;
+    font-size: var(--step-1);
+    line-height: var(--lh-1);
+    letter-spacing: -0.015em;
+  }
+
+  .experience-row__employer {
+    color: var(--c-graphite);
+    font-size: var(--step--1);
+    line-height: var(--lh--1);
+  }
+
+  .experience-row__description {
+    max-width: var(--measure);
+    font-size: var(--step--1);
+    line-height: var(--lh--1);
+  }
+
+  @media (max-width: 719.98px) {
+    .experience-row {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: var(--space-2);
+    }
+  }
+</style>

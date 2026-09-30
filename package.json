@@ -14,7 +14,8 @@
     "preview": "astro preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "generate:social-card": "node scripts/rasterize-social-card.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",

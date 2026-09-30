@@ -34,9 +34,9 @@ test('renders every component variant', async ({ page }) => {
     ).toBeVisible();
   }
 
-  await expect(
-    page.locator('section[aria-labelledby="project-card"] .project-card'),
-  ).toHaveCount(4);
+  await expect(page.locator('section#project-card .project-card')).toHaveCount(
+    4,
+  );
 
   const items = page.locator('.writing-item');
   expect(await items.count()).toBeGreaterThanOrEqual(5);
@@ -150,7 +150,7 @@ test('spans a lone project card across its run and aligns the index to the page 
 
   // Year margin lines up with the section labels, entries with the section body.
   const labelLeft = await page
-    .locator('#index')
+    .locator('#index-title')
     .evaluate((node) => node.getBoundingClientRect().left);
   const yearLeft = await page
     .locator('.index-year__label')
@@ -158,7 +158,7 @@ test('spans a lone project card across its run and aligns the index to the page 
     .evaluate((node) => node.getBoundingClientRect().left);
   expect(Math.abs(yearLeft - labelLeft)).toBeLessThan(1);
   const bodyLeft = await page
-    .locator('#index + .tile-section__body')
+    .locator('#index-title + .tile-section__body')
     .evaluate((node) => node.getBoundingClientRect().left);
   expect(Math.abs(runBox!.x - bodyLeft)).toBeLessThan(1);
 });

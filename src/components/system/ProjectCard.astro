@@ -14,12 +14,18 @@ interface Props {
    * Defaults to feature when the entry is flagged `feature`, otherwise stack.
    */
   layout?: 'stack' | 'feature' | 'wide';
+  /**
+   * Hides the badge and year row. The index passes false when every card
+   * shares a type, since its year margin already shows the year.
+   */
+  showType?: boolean;
 }
 
 const {
   entry,
   level = 3,
   layout = entry.feature ? 'feature' : 'stack',
+  showType = true,
 } = Astro.props;
 const Heading = `h${level}` as const;
 const captions = {
@@ -34,6 +40,7 @@ const preview = entry.preview;
   class="project-card"
   id={`entry-${entry.slug}`}
   data-layout={layout}
+  data-linked={entry.href ? 'true' : 'false'}
   data-has-preview={preview ? '' : undefined}
 >
   {preview && (
@@ -55,16 +62,22 @@ const preview = entry.preview;
   )}
   <div class="project-card__body">
     <div class="project-card__head">
-      <p class="project-card__meta">
-        <TypeBadge type={entry.type} />
-        <time class="project-card__year" datetime={String(entry.year)}>
-          {entry.year}
-        </time>
-      </p>
+      {showType && (
+        <p class="project-card__meta">
+          <TypeBadge type={entry.type} />
+          <time class="project-card__year" datetime={String(entry.year)}>
+            {entry.year}
+          </time>
+        </p>
+      )}
       <Heading class="project-card__title">
-        <a class="project-card__link" href={entry.href}>
-          {entry.title}
-        </a>
+        {entry.href ? (
+          <a class="project-card__link" href={entry.href}>
+            {entry.title}
+          </a>
+        ) : (
+          entry.title
+        )}
       </Heading>
     </div>
     <div class="project-card__detail">
@@ -141,6 +154,7 @@ const preview = entry.preview;
 
   .project-card__title {
     max-width: none;
+    color: var(--c-paper-bright);
     font-size: var(--step-1);
     line-height: var(--lh-1);
     letter-spacing: -0.015em;
@@ -174,8 +188,8 @@ const preview = entry.preview;
     text-underline-offset: 0.22em;
   }
 
-  .project-card:hover .project-card__frame,
-  .project-card:focus-within .project-card__frame {
+  .project-card[data-linked='true']:hover .project-card__frame,
+  .project-card[data-linked='true']:focus-within .project-card__frame {
     border-color: var(--c-phosphor);
   }
 
