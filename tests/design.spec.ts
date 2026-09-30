@@ -2,6 +2,8 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 
+test.use({ colorScheme: 'dark' });
+
 test('serves the style tile as a single-h1, noindex page on carbon', async ({
   page,
 }) => {
@@ -16,7 +18,7 @@ test('serves the style tile as a single-h1, noindex page on carbon', async ({
   const background = await page.evaluate(
     () => getComputedStyle(document.body).backgroundColor,
   );
-  expect(background).toBe('rgb(15, 18, 21)');
+  expect(background).toBe('rgb(10, 16, 32)');
 });
 
 test('keeps the style tile out of the sitemap', async ({ request }) => {

@@ -1,9 +1,12 @@
 ---
 import DgLegend from '../components/system/diagram/DgLegend.astro';
+import BrainNetwork from '../components/system/BrainNetwork.astro';
 import DiscoverySketch from '../components/system/diagrams/DiscoverySketch.astro';
 import IndexGrid from '../components/system/IndexGrid.astro';
 import ProjectCard from '../components/system/ProjectCard.astro';
 import Section from '../components/system/Section.astro';
+import SiteControls from '../components/system/SiteControls.astro';
+import SynapseMark from '../components/system/SynapseMark.astro';
 import WritingList from '../components/system/WritingList.astro';
 import { cardVariants, indexEntries, writingRows } from '../data/designSamples';
 import SystemLayout from '../layouts/SystemLayout.astro';
@@ -31,49 +34,98 @@ const ratio = (a: Rgb, b: Rgb) => {
 const toHex = ([r, g, b]: Rgb) =>
   `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
 
-const carbon = parseHex('#0F1215');
-const phosphor = parseHex('#E0A458');
-// phosphor-dim is 14% phosphor over carbon, so composite it before measuring.
-const phosphorDim = carbon.map((base, i) =>
-  Math.round(base * 0.86 + phosphor[i]! * 0.14),
-) as unknown as Rgb;
+type Token = {
+  name: string;
+  role: string;
+  dark: string;
+  light: string;
+  /** Alpha of a translucent token; it is composited over carbon to measure. */
+  alpha?: number;
+};
 
-const swatches = [
-  { name: '--c-carbon', hex: '#0F1215', role: 'Page background' },
+const tokens: Token[] = [
+  {
+    name: '--c-carbon',
+    dark: '#0A1020',
+    light: '#EEF2F8',
+    role: 'Page background',
+  },
   {
     name: '--c-slate',
-    hex: '#171B1F',
+    dark: '#111A2E',
+    light: '#E2E8F2',
     role: 'Preview frames, diagram nodes, code',
   },
-  { name: '--c-rule', hex: '#272D33', role: 'Hairlines, tag borders' },
+  {
+    name: '--c-rule',
+    dark: '#1C2840',
+    light: '#CDD6E4',
+    role: 'Hairlines, tag borders',
+  },
   {
     name: '--c-rule-strong',
-    hex: '#3A424A',
+    dark: '#2C3B58',
+    light: '#AAB7CC',
     role: 'Diagram strokes, focused borders',
   },
-  { name: '--c-graphite', hex: '#8E969E', role: 'Muted text and metadata' },
-  { name: '--c-paper', hex: '#E8E4DA', role: 'Body text' },
-  { name: '--c-paper-bright', hex: '#F6F3EC', role: 'Headings' },
+  {
+    name: '--c-graphite',
+    dark: '#8B98B0',
+    light: '#53607A',
+    role: 'Muted text and metadata',
+  },
+  { name: '--c-paper', dark: '#E4E7EE', light: '#1A2336', role: 'Body text' },
+  {
+    name: '--c-paper-bright',
+    dark: '#F5F7FB',
+    light: '#0A1020',
+    role: 'Headings',
+  },
   {
     name: '--c-phosphor',
-    hex: '#E0A458',
+    dark: '#E0A458',
+    light: '#935507',
     role: 'The one accent: links, focus ring, primary diagram path',
   },
   {
     name: '--c-phosphor-dim',
-    hex: 'rgb(224 164 88 / 14%)',
+    dark: '#E0A458',
+    light: '#935507',
+    alpha: 0.14,
     role: 'Selection and accent fills',
-    rgb: phosphorDim,
-    swatch: toHex(phosphorDim),
   },
-].map((swatch) => {
-  const rgb = swatch.rgb ?? parseHex(swatch.hex);
-  return {
-    ...swatch,
-    fill: swatch.swatch ?? swatch.hex,
-    contrast: ratio(rgb, carbon).toFixed(1),
-  };
-});
+  {
+    name: '--c-synapse',
+    dark: '#5FB8E6',
+    light: '#2F6FB0',
+    role: 'Field and brain motif ink only, never text or links',
+  },
+];
+
+/** Builds one palette table. Contrast is always measured against that theme's carbon. */
+const palette = (theme: 'dark' | 'light') => {
+  const carbon = parseHex(tokens[0]![theme]);
+  return tokens.map((token) => {
+    const rgb = parseHex(token[theme]);
+    // A translucent token is composited over carbon before measuring.
+    const measured = token.alpha
+      ? (carbon.map((base, i) =>
+          Math.round(base * (1 - token.alpha!) + rgb[i]! * token.alpha!),
+        ) as unknown as Rgb)
+      : rgb;
+    return {
+      name: token.name,
+      role: token.role,
+      hex: token.alpha
+        ? `rgb(${rgb.join(' ')} / ${Math.round(token.alpha * 100)}%)`
+        : token[theme],
+      fill: toHex(measured),
+      contrast: ratio(measured, carbon).toFixed(1),
+    };
+  });
+};
+const swatches = palette('dark');
+const lightSwatches = palette('light');
 
 const steps = [
   {
@@ -188,10 +240,13 @@ fn announce(name: &str) -> std::io::Result<()> {
     <a class="tile-wordmark" href="/">
       Tihomir Selak
     </a>
-    <p class="tile-header__meta">
-      <span>Design system, draft 1</span>
-      <time datetime="2026-09-30">2026-09-30</time>
-    </p>
+    <div class="tile-header__end">
+      <p class="tile-header__meta">
+        <span>Design system, draft 1</span>
+        <time datetime="2026-09-30">2026-09-30</time>
+      </p>
+      <SiteControls />
+    </div>
   </header>
 
   <main id="main">
@@ -208,10 +263,14 @@ fn announce(name: &str) -> std::io::Result<()> {
     <div class="wrap">
       <Section id="color" label="Color">
         <p class="tile-note">
-          Dark only. Phosphor is the single accent, and it only marks what you
-          can interact with or the path a diagram is explaining. Contrast is
-          measured against carbon.
+          Two themes: ink navy and a cool light "lab glass", chosen by the OS
+          until the visitor picks one. Phosphor is the single accent, and it
+          only marks what you can interact with or the path a diagram is
+          explaining. Synapse is ink for the background field and the brain
+          motif, never text. Contrast is measured against carbon of the same
+          theme.
         </p>
+        <h3 class="tile-subhead">Dark, ink navy</h3>
         <ul class="swatches">
           {swatches.map((swatch) => (
             <li class="swatch">
@@ -227,6 +286,56 @@ fn announce(name: &str) -> std::io::Result<()> {
             </li>
           ))}
         </ul>
+        <h3 class="tile-subhead">Light, lab glass</h3>
+        <ul class="swatches">
+          {lightSwatches.map((swatch) => (
+            <li class="swatch">
+              <span
+                class="swatch__chip"
+                style={`background: ${swatch.fill}`}
+                aria-hidden="true"
+              />
+              <span class="swatch__name">{swatch.name}</span>
+              <span class="swatch__hex">{swatch.hex}</span>
+              <span class="swatch__role">{swatch.role}</span>
+              <span class="swatch__ratio">{swatch.contrast}:1</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section id="motif" label="Motif">
+        <p class="tile-note">
+          One brain drawn three ways: the header mark at 20px, the section glyph
+          at 12px, and the hero illustration. The hero has one slow signal and a
+          few firing nodes. The mark and glyph are static.
+        </p>
+        <div class="motif-row">
+          <figure class="motif-item">
+            <SynapseMark size={48} />
+            <figcaption class="mono">Mark</figcaption>
+          </figure>
+          <figure class="motif-item">
+            <svg
+              class="motif-glyph"
+              viewBox="0 0 16 16"
+              width="56"
+              height="56"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                d="M7 9 4.2 6.4 1.8 6.6M4.2 6.4 3.6 3.2M7 9 8 4.6 10.4 3M8 4.6 7 1.6M7 9 3.8 11.4 2 14.2M3.8 11.4 1.4 11M7 9 8.6 13.2 7.6 15.2M9 9.2 15 8.2"
+                fill="none"
+              ></path>
+              <circle cx="7" cy="9" r="2.1"></circle>
+            </svg>
+            <figcaption class="mono">Section glyph</figcaption>
+          </figure>
+        </div>
+        <div class="motif-hero">
+          <BrainNetwork />
+        </div>
       </Section>
 
       <Section id="type" label="Type">
@@ -448,7 +557,7 @@ fn announce(name: &str) -> std::io::Result<()> {
   .tile-header {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: var(--space-3) var(--space-5);
     padding-block: var(--space-5);
@@ -465,6 +574,13 @@ fn announce(name: &str) -> std::io::Result<()> {
 
   .tile-wordmark:hover {
     text-decoration: underline;
+  }
+
+  .tile-header__end {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
   }
 
   .tile-header__meta {
@@ -501,6 +617,49 @@ fn announce(name: &str) -> std::io::Result<()> {
     font-size: var(--step-0);
     line-height: var(--lh-0);
     letter-spacing: 0;
+  }
+
+  .tile-subhead {
+    max-width: none;
+    color: var(--c-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 400;
+    font-stretch: 100%;
+    letter-spacing: 0;
+  }
+
+  /* Motif */
+  .motif-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+  }
+
+  .motif-item {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+    color: var(--c-paper-bright);
+  }
+
+  .motif-item figcaption {
+    color: var(--c-graphite);
+  }
+
+  .motif-glyph path {
+    stroke: var(--c-synapse);
+    stroke-width: 0.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .motif-glyph circle {
+    fill: var(--c-phosphor);
+  }
+
+  .motif-hero {
+    max-width: 360px;
   }
 
   /* Color */

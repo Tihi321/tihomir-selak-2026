@@ -1,21 +1,26 @@
 /*
-  Design system v1 tokens ("bench notebook"). Dark only.
+  Design system tokens ("bench notebook"). Two themes through light-dark():
+  ink navy (dark) and cool "lab glass" (light). Token names are roles, not
+  hues. Without data-theme the OS decides; theme-init.js sets it on choice.
   Breakpoints cannot be CSS variables inside media queries, so they are
   documented constants: sm = 720px, lg = 1024px.
 */
 :root {
-  color-scheme: dark;
+  color-scheme: light dark;
 
-  /* Color */
-  --c-carbon: #0f1215;
-  --c-slate: #171b1f;
-  --c-rule: #272d33;
-  --c-rule-strong: #3a424a;
-  --c-graphite: #8e969e;
-  --c-paper: #e8e4da;
-  --c-paper-bright: #f6f3ec;
-  --c-phosphor: #e0a458;
-  --c-phosphor-dim: rgb(224 164 88 / 14%);
+  /* Color: light-dark(<light>, <dark>) */
+  --c-carbon: light-dark(#eef2f8, #0a1020);
+  --c-slate: light-dark(#e2e8f2, #111a2e);
+  --c-rule: light-dark(#cdd6e4, #1c2840);
+  --c-rule-strong: light-dark(#aab7cc, #2c3b58);
+  --c-graphite: light-dark(#53607a, #8b98b0);
+  --c-paper: light-dark(#1a2336, #e4e7ee);
+  --c-paper-bright: light-dark(#0a1020, #f5f7fb);
+  --c-phosphor: light-dark(#935507, #e0a458);
+  --c-phosphor-dim: light-dark(rgb(147 85 7 / 14%), rgb(224 164 88 / 14%));
+  /* Field and motif ink only, never text or links. */
+  --c-synapse: light-dark(#2f6fb0, #5fb8e6);
+  --c-synapse-dim: light-dark(rgb(47 111 176 / 22%), rgb(95 184 230 / 22%));
 
   /* Type families */
   --font-sans: var(--font-archivo), Archivo, Arial, sans-serif;
@@ -72,6 +77,14 @@
   --page-max: 1200px;
   --page-gutter: clamp(16px, 4vw, 48px);
   --col-gap: 24px;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 @media (max-width: 719.98px) {

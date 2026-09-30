@@ -15,10 +15,12 @@ test('publishes canonical, social, and Person metadata', async ({ page }) => {
     'content',
     /Tihomir Selak | Development Team Lead/,
   );
-  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
-    'content',
-    '#0F1215',
-  );
+  await expect(
+    page.locator('meta[name="theme-color"][media*="dark"]'),
+  ).toHaveAttribute('content', '#0A1020');
+  await expect(
+    page.locator('meta[name="theme-color"][media*="light"]'),
+  ).toHaveAttribute('content', '#EEF2F8');
   await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
     'content',
     'summary_large_image',

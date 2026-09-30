@@ -1,9 +1,12 @@
 ---
 import { site } from '../../data/site';
+import SiteControls from './SiteControls.astro';
+import SynapseMark from './SynapseMark.astro';
 ---
 
 <header class="site-header wrap">
   <a class="site-header__wordmark" href="/" aria-label="Tihomir Selak home">
+    <SynapseMark />
     Tihomir Selak
   </a>
   <nav class="site-header__nav" aria-label="Main navigation">
@@ -13,20 +16,23 @@ import { site } from '../../data/site';
     <a href="/#contact">Contact</a>
     <a href={site.blog}>Blog</a>
   </nav>
+  <SiteControls />
 </header>
 
 <style>
   .site-header {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
+    align-items: center;
     gap: var(--space-3) var(--space-5);
     padding-block: var(--space-5);
     border-bottom: var(--border-hair);
   }
 
   .site-header__wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
     color: var(--c-paper-bright);
     font-weight: 600;
     font-stretch: 88%;
@@ -45,5 +51,29 @@ import { site } from '../../data/site';
     font-family: var(--font-mono);
     font-size: var(--step--2);
     line-height: var(--lh--2);
+  }
+
+  /* Narrow: wordmark and controls share the first row, the nav wraps below. */
+  .site-header :global(.site-controls) {
+    order: 1;
+    margin-left: auto;
+  }
+
+  .site-header__nav {
+    order: 2;
+    flex-basis: 100%;
+  }
+
+  @media (min-width: 720px) {
+    .site-header__nav {
+      order: 0;
+      flex-basis: auto;
+      margin-left: auto;
+    }
+
+    .site-header :global(.site-controls) {
+      order: 0;
+      margin-left: 0;
+    }
   }
 </style>

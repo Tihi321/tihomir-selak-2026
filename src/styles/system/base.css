@@ -162,6 +162,17 @@ pre code {
   line-height: var(--lh--2);
 }
 
+/* Neural field sits behind the page chrome. It is JS-only and switchable. */
+:root:not([data-js]) .neural-field,
+:root[data-field='off'] .neural-field {
+  display: none;
+}
+
+body > :where(header, main, footer) {
+  position: relative;
+  z-index: 1;
+}
+
 .skip-link {
   position: absolute;
   z-index: 20;

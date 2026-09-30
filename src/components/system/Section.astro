@@ -12,6 +12,20 @@ const hasWide = Astro.slots.has('wide');
 
 <section class="tile-section grid-12" id={id} aria-labelledby={`${id}-title`}>
   <h2 class="tile-section__label" id={`${id}-title`}>
+    <svg
+      class="tile-section__glyph"
+      viewBox="0 0 16 16"
+      width="14"
+      height="14"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M7 9 4.2 6.4 1.8 6.6M4.2 6.4 3.6 3.2M7 9 8 4.6 10.4 3M8 4.6 7 1.6M7 9 3.8 11.4 2 14.2M3.8 11.4 1.4 11M7 9 8.6 13.2 7.6 15.2M9 9.2 15 8.2"
+        fill="none"
+      ></path>
+      <circle cx="7" cy="9" r="2.1"></circle>
+    </svg>
     {label}
   </h2>
   <div class="tile-section__body">
@@ -37,6 +51,25 @@ const hasWide = Astro.slots.has('wide');
     font-size: var(--step-1);
     line-height: var(--lh-1);
     letter-spacing: -0.015em;
+  }
+
+  /* A neuron: amber soma, forked dendrites and a longer axon stub. */
+  .tile-section__glyph {
+    display: inline-block;
+    margin-right: 0.45em;
+    vertical-align: -0.06em;
+  }
+
+  .tile-section__glyph path {
+    stroke: var(--c-synapse);
+    stroke-width: 1.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.85;
+  }
+
+  .tile-section__glyph circle {
+    fill: var(--c-phosphor);
   }
 
   .tile-section__body {

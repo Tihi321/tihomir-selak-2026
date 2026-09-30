@@ -1,6 +1,7 @@
 ---
 import '../styles/system/base.css';
 import { Font } from 'astro:assets';
+import NeuralField from '../components/system/NeuralField.astro';
 import { person, site } from '../data/site';
 
 interface Props {
@@ -33,7 +34,17 @@ const socialUrl = new URL(socialImage, site.url).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
-    <meta name="theme-color" content="#0F1215" />
+    <script is:inline src="/scripts/theme-init.js"></script>
+    <meta
+      name="theme-color"
+      content="#0A1020"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#EEF2F8"
+      media="(prefers-color-scheme: light)"
+    />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -58,6 +69,7 @@ const socialUrl = new URL(socialImage, site.url).href;
     <title>{fullTitle}</title>
   </head>
   <body>
+    <NeuralField />
     <a class="skip-link" href="#main">
       Skip to content
     </a>
